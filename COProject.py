@@ -1,10 +1,19 @@
-class ARMSim:
+#CO Project
+#Arm Simulator
 
-	def fetch():
-		with open("input.mem","r") as f:
-			for line in f:
-				decode(line)
+def getIntFromHex(hexValue):
+	return int(hexValue,16)
+
+def loadFromFile(fileName):
+	instructions = dict()
+	file = open(fileName,'r')
+	allInstructions = file.readlines()
+	for data in allInstructions:
+		instruct = data.split()
+		addressInHex = instruct[0].strip()
+		addressInInt = getIntFromHex(addressInHex)
+		instruction = instruct[1].strip()
+		instructions[addressInInt] = instruction
+	print instructions
 
 
-	def decode(self, instruction):
-		print ("This function decodes an")
