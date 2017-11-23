@@ -86,9 +86,12 @@ class DataProcessingInstruction:
 			#TODO - apply rotate to second operand
 
 
+class SingleDataTransferInstruction:
 
 
-
+	def __init__(self,instruction):
+		self.instruction = instruction
+		
 
 
 def getIntFromHex(hexValue):
