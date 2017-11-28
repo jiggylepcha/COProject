@@ -43,6 +43,10 @@ class DataProcessingInstruction:
 	
 	OPERAND_TYPE_REGISTER = '0'
 	OPERAND_TYPE_IMMEDIATE = '1'
+	SHIFT_TYPE_LOGICAL_LEFT = "00"
+	SHIFT_TYPE_LOGICAL_RIGHT = "01"
+	SHIFT_TYPE_ARITHMETIC_RIGHT = "10"
+	SHIFT_TYPE_ROTATE_RIGHT = "11"
 
 	def __init__(self,instruction):
 		self.instruction = instruction
@@ -72,14 +76,32 @@ class DataProcessingInstruction:
 
 		self.destination_register = instructionInBinary[16:20]
 
-		if self.typeOfOperand == DataProcessingInstruction.OPERAND_TYPE_REGISTER:
+		if str(self.typeOfOperand) == str(DataProcessingInstruction.OPERAND_TYPE_REGISTER):
 			self.shift = instructionInBinary[20:28]
 			self.sourceRegister2 = instructionInBinary[28:]
 			self.operand_2 = Instruction.registers[int(self.sourceRegister2,2)]
 
-			#TODO - appply shift to second operand
+			shiftOperation = self.shift[7]
+			if (str(shiftOperation) == "0"):
+				#instruction specified shift amount
+				shiftAmount = self.shift[:5]
+				shiftAmount = int(shiftAmount,2)
+				shiftType = self.shift[5:7]
+				if (str(shiftType) == SHIFT_TYPE_LOGICAL_LEFT):
+					self.operand_2 = self.operand_2 << shiftAmount
+				elif (str(shiftType) == SHIFT_TYPE_LOGICAL_RIGHT):
+					self.operand_2 = self.operand_2 >> shiftAmount
 
-		elif self.typeOfOperand == DataProcessingInstruction.OPERAND_TYPE_IMMEDIATE :
+
+				#TODO Apply ASR and ROR
+
+			elif (str(shiftOperation) == "1"):
+				#register specified shift amount
+
+				#TODO
+
+
+		elif str(self.typeOfOperand) == str(DataProcessingInstruction.OPERAND_TYPE_IMMEDIATE) :
 			self.rotate = instructionInBinary[20:24]
 			self.immediateValue = instructionInBinary[24:]
 			self.operand_2 = int(self.immediateValue,2)
@@ -92,7 +114,29 @@ class SingleDataTransferInstruction:
 
 	def __init__(self,instruction):
 		self.instruction = instruction
-		
+		self.condition = ""
+		self.immediateOffset = ""
+		self.indexingBit = ""
+		self.upDownBit = ""
+		self.byteWordBit = ""
+		self.writeBackBit = ""
+		self.loadStoreBit = ""
+		self.baseRegister = None
+		self.destinationRegister = None
+		self.offset = None
+
+	def assignValues(self):
+		instructionInBinary = self.instruction.instructionInBinary
+		condition = instructionInBinary[:4]  #31,30,29,28
+		self.condition = condition
+		self.immediateOffset = instructionInBinary[6:7] #25
+		self.indexingBit = instructionInBinary[7:8] #24
+		self.upDownBit = instructionInBinary[8:9] #23
+		self.byteWordBit = instructionInBinary[9:10] #22
+		self.writeBackBit = instructionInBinary[10:11] #21
+		self.loadStoreBit = instructionInBinary[11:12] #20
+		self.baseRegister = instructionInBinary[12:16] #19,18,17,16
+		self.destinationRegister = instructionInBinary[16:20] #15,14,13,12		
 
 
 def getIntFromHex(hexValue):
