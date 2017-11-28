@@ -1,5 +1,8 @@
 #CO Project
 #Arm Simulator
+# Vishaal Udandarao 2016119
+# Suryatej Reddy 2016102
+# JIgme Lobsang Lepcha 2016045
 
 class Instruction:
 	all_instructions = list()
@@ -22,7 +25,7 @@ class Instruction:
 		return next((instruct for instruct in Instruction.all_instructions if instruct.addressInInt == address), None)
 
 	def printFetchStatement(self):
-		print "Fetch instruction " + self.instruction + " from address " + self.addressInHex
+		print ("Fetch instruction " + self.instruction + " from address " + self.addressInHex)
 
 	def splitInstruction(self):
 		instructionInBinary = self.instructionInBinary
@@ -142,6 +145,6 @@ def main():
 	for i in range(0,13,4):
 		currentInstruction = fetchInstruction(i)
 		currentInstruction.splitInstruction()
-
+		
 if __name__=='__main__':
 	main()
