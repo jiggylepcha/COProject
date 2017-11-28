@@ -28,25 +28,38 @@ class Instruction:
 	def splitInstruction(self):
 		instructionInBinary = self.instructionInBinary
 		format_bits = instructionInBinary[4:6]  #27,26
-		
-		if format_bits == '00':
+
+		if (format_bits == '00'):
 			#data processing instruction
 			dataInstruction = DataProcessingInstruction(self)
-			self.subInstruction = dataInstruction
+			self.subInstruction=dataInstruction
 
-		elif format_bits == '01':
+		elif (format_bits == '01'):
 			#single data transfer
 			self.singleDataTransfer()
 
 
 class DataProcessingInstruction:
-	
+
+
+
 	OPERAND_TYPE_REGISTER = '0'
 	OPERAND_TYPE_IMMEDIATE = '1'
 	SHIFT_TYPE_LOGICAL_LEFT = "00"
 	SHIFT_TYPE_LOGICAL_RIGHT = "01"
 	SHIFT_TYPE_ARITHMETIC_RIGHT = "10"
 	SHIFT_TYPE_ROTATE_RIGHT = "11"
+
+	OPCODE_AND = '0000'
+	OPCODE_EOR = '0001'
+	OPCODE_SUB = '0010'
+	OPCODE_RSB = '0011'
+	OPCODE_ADD = '0100'
+	OPCODE_ORR = '1100'
+	OPCODE_MOV = '1101'
+	OPCODE_BIC = '1110'
+	OPCODE_MVN = '1111'
+
 
 	def __init__(self,instruction):
 		self.instruction = instruction
@@ -63,6 +76,10 @@ class DataProcessingInstruction:
 		self.rotate = 0
 		self.type = None
 		self.assignValues()
+		
+
+
+
 
 	def assignValues(self):
 		instructionInBinary = self.instruction.instructionInBinary
@@ -80,6 +97,8 @@ class DataProcessingInstruction:
 			self.shift = instructionInBinary[20:28]
 			self.sourceRegister2 = instructionInBinary[28:]
 			self.operand_2 = Instruction.registers[int(self.sourceRegister2,2)]
+			
+
 
 			shiftOperation = self.shift[7]
 			if (str(shiftOperation) == "0"):
@@ -91,6 +110,7 @@ class DataProcessingInstruction:
 					self.operand_2 = self.operand_2 << shiftAmount
 				elif (str(shiftType) == SHIFT_TYPE_LOGICAL_RIGHT):
 					self.operand_2 = self.operand_2 >> shiftAmount
+
 
 
 				#TODO Apply ASR and ROR
@@ -105,8 +125,41 @@ class DataProcessingInstruction:
 			self.rotate = instructionInBinary[20:24]
 			self.immediateValue = instructionInBinary[24:]
 			self.operand_2 = int(self.immediateValue,2)
+			
 
-			#TODO - apply rotate to second operand
+			#TODO - apply rotate to second operation
+
+
+
+	def executeInstruction(self):
+		if self.opcode == OPCODE_AND:
+				res = self.operand_1 & self.operand_2
+				Instruction.registers[int(self.destination_register,2)] = res
+		elif self.opcode == OPCODE_EOR:
+				res = self.operand_1 ^ self.operand_2
+				Instruction.registers[int(self.destination_register,2)] = res
+		elif self.opcode == OPCODE_SUB:
+				res = self.operand_1 - self.operand_2
+				Instruction.registers[int(self.destination_register,2)] = res
+		elif self.opcode == OPCODE_RSB:
+				res = self.operand_2 - self.operand_1
+				Instruction.registers[int(self.destination_register,2)] = res
+		elif self.opcode == OPCODE_ADD:
+				res = self.operand_1 + self.operand_2
+				Instruction.registers[int(self.destination_register,2)] = res
+		elif self.opcode == OPCODE_ORR:
+				res = self.operand_1 | self.operand_2
+				Instruction.registers[int(self.destination_register,2)] = res
+		elif self.opcode == OPCODE_MOV:
+				res = self.operand_2
+				Instruction.registers[int(self.destination_register,2)] = res
+		elif self.opcode == OPCODE_BIC:
+				res = self.operand_1 & (!self.operand_2)
+				Instruction.registers[int(self.destination_register,2)] = res
+		elif self.opcode == OPCODE_MVN:
+				res = !self.operand_2
+				Instruction.registers[int(self.destination_register,2)] = res
+
 
 
 class SingleDataTransferInstruction:
@@ -114,6 +167,7 @@ class SingleDataTransferInstruction:
 
 	def __init__(self,instruction):
 		self.instruction = instruction
+
 		self.condition = ""
 		self.immediateOffset = ""
 		self.indexingBit = ""
@@ -139,6 +193,7 @@ class SingleDataTransferInstruction:
 		self.destinationRegister = instructionInBinary[16:20] #15,14,13,12		
 
 
+
 def getIntFromHex(hexValue):
 	return int(hexValue,16)
 
@@ -147,17 +202,18 @@ def getBinaryFromHex(hexValue):
 	return b
 
 
+
 #returns dictionary
 def initRegisters(numberOfRegisters = 32):
 	registers = dict()
 	for reigsterId in range(0,32):
-		registers[reigsterId] = 0
-	Instruction.registers = registers
+			registers[reigsterId] = 0
+			Instruction.registers = registers
 
 #returns List
 def initMainMemory():
-	memory = list()
-	Instruction.memory = memory
+		memory = list()
+		Instruction.memory = memory
 
 
 #the dictionary contains {0:('0x0xE3A0200A',0x0),4:('0x0xE3A0200A',0x4)}
@@ -172,13 +228,13 @@ def loadFromFile(fileName):
 
 #just prints instruction and returns the instruction
 def fetchInstruction(instLocation):
-	curInstruction = Instruction.getInstruction(instLocation)
-	# curInstruction.printFetchStatement()
-	return curInstruction
+		curInstruction = Instruction.getInstruction(instLocation)
+		# curInstruction.printFetchStatement()
+		return curInstruction
 
 #takes the instruction object as a parameter
 def decodeInstruction(instruction):
-	pass
+		pass
 
 def main():
 	loadFromFile("input.mem")
