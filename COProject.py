@@ -23,7 +23,7 @@ class Instruction:
         return next((instruct for instruct in Instruction.all_instructions if instruct.addressInInt == address), None)
 
     def printFetchStatement(self):
-        print ("Fetch instruction " + self.instruction + " from address " + self.addressInHex)
+        print ("FETCH : Fetch instruction " + self.instruction + " from address " + self.addressInHex)
 
     def splitInstruction(self):
         instructionInBinary = self.instructionInBinary
@@ -170,39 +170,39 @@ class DataProcessingInstruction:
         if self.opcode == DataProcessingInstruction.OPCODE_AND:
                 res = self.operand_1 & self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
-                print('EXECUTE:AND '+str(self.operand_1)+' and '+str(self.operand_2))
+                print('EXECUTE : AND '+str(self.operand_1)+' and '+str(self.operand_2))
         elif self.opcode == DataProcessingInstruction.OPCODE_EOR:
                 res = self.operand_1 ^ self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
-                print('EXECUTE:EOR '+str(self.operand_1)+' and '+str(self.operand_2))
+                print('EXECUTE : EOR '+str(self.operand_1)+' and '+str(self.operand_2))
         elif self.opcode == DataProcessingInstruction.OPCODE_SUB:
                 res = self.operand_1 - self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
-                print('EXECUTE:SUB '+str(self.operand_1)+' and '+str(self.operand_2))
+                print('EXECUTE : SUB '+str(self.operand_1)+' and '+str(self.operand_2))
         elif self.opcode == DataProcessingInstruction.OPCODE_RSB:
                 res = self.operand_2 - self.operand_1
                 Instruction.registers[int(self.destination_register,2)] = res
-                print('EXECUTE:RSB '+str(self.operand_2)+' and '+str(self.operand_1))
+                print('EXECUTE : RSB '+str(self.operand_2)+' and '+str(self.operand_1))
         elif self.opcode == DataProcessingInstruction.OPCODE_ADD:
                 res = self.operand_1 + self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
-                print('EXECUTE:ADD '+str(self.operand_1)+' and '+str(self.operand_2))
+                print('EXECUTE : ADD '+str(self.operand_1)+' and '+str(self.operand_2))
         elif self.opcode == DataProcessingInstruction.OPCODE_ORR:
                 res = self.operand_1 | self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
-                print('EXECUTE:ORR '+str(self.operand_1)+' and '+str(self.operand_2))
+                print('EXECUTE : ORR '+str(self.operand_1)+' and '+str(self.operand_2))
         elif self.opcode == DataProcessingInstruction.OPCODE_MOV:
                 res = self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
-                print('EXECUTE:MOV '+str(self.operand_2)+' in R'+str(int(self.destination_register,2)))
+                print('EXECUTE : MOV '+str(self.operand_2)+' in R'+str(int(self.destination_register,2)))
         elif self.opcode == DataProcessingInstruction.OPCODE_BIC:
                 res = self.operand_1 & (~self.operand_2)
                 Instruction.registers[int(self.destination_register,2)] = res
-                print('EXECUTE:BIC '+str(self.operand_1)+' and '+str(self.operand_2))
+                print('EXECUTE : BIC '+str(self.operand_1)+' and '+str(self.operand_2))
         elif self.opcode == DataProcessingInstruction.OPCODE_MVN:
                 res = ~self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
-                print('EXECUTE:MVN '+str(self.operand_2)+' in R'+str(int(self.destination_register,2)))
+                print('EXECUTE : MVN '+str(self.operand_2)+' in R'+str(int(self.destination_register,2)))
 
 
 
