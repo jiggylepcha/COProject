@@ -332,6 +332,7 @@ class DataProcessingInstruction:
                 res = self.operand_1 - self.operand_2
                 Instruction.compare_difference = res
                 print('EXECUTE : CMP '+str(self.operand_1)+' and '+str(self.operand_2))
+                return
 
         print("MEMORY: No memory operation")
         print("WRITEBACK: write " + str(res) + " to R" + str(int(self.destination_register, 2)))
@@ -357,6 +358,8 @@ class SingleDataTransferInstruction:
 
         self.assignValues()
 
+
+
     def assignValues(self):
         instructionInBinary = self.instruction.instructionInBinary
         condition = instructionInBinary[:4]  #31,30,29,28
@@ -380,12 +383,36 @@ class SingleDataTransferInstruction:
             shiftToRegister = instructionInBinary[20:28]
             offsetRegister = instructionInBinary[28:32]
 
-            #TODO implement shift to register
-
             self.offset = Instruction.registers[int(offsetRegister,2)]
 
-        baseAddress = Instruction.registers[int(self.baseRegister,2)]
+            shiftOperation = shiftToRegister[7]
+            if (str(shiftOperation) == "0"):
 
+                # instruction specified shift amount
+                shiftAmount = shiftToRegister[:5]
+                shiftAmount = int(shiftAmount, 2)
+                shiftType = shiftToRegister[5:7]
+                if (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_LOGICAL_LEFT):
+                    self.offset = self.offset << shiftAmount
+                elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_LOGICAL_RIGHT):
+                    self.offset = self.offset >> shiftAmount
+                elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ARITHMETIC_RIGHT):
+                    self.offset = rshift(self.offset, shiftAmount)
+                elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ROTATE_RIGHT):
+                    pass
+                    # TODO Apply ASR and ROR
+
+
+            elif (str(shiftOperation) == "1"):
+
+                # TODO register shift
+                # register specified shift amount
+                pass
+                self.offset = Instruction.registers[int(offsetRegister, 2)]
+
+
+
+        baseAddress = Instruction.registers[int(self.baseRegister,2)]
         if (self.upDownBit == "1"):   #add the offset
             baseAddress += self.offset
         else:
@@ -403,7 +430,7 @@ class SingleDataTransferInstruction:
     def performLoadStore(self,base_address):
         if (self.loadStoreBit == "0"): #store to memory
             Instruction.memory[base_address] = Instruction.registers[int(self.destinationRegister,2)]
-            print ("MEMORY: Storing " + Instruction.registers[int(self.destinationRegister,2)] + " at the memory location " + base_address)
+            print ("MEMORY: Storing " + str(Instruction.registers[int(self.destinationRegister,2)]) + " at the memory location " + str(base_address))
             print ("WRITEBACK: No WriteBack")
 
         else: #load from memory
@@ -412,18 +439,18 @@ class SingleDataTransferInstruction:
                 print ("memory location not present. ERRRROROROROORORORORO")
             else:
                 Instruction.registers[int(self.destinationRegister,2)] = loaded_value
-                print("MEMORY: Loading from memory location " + base_address + " and storing in  R" + str(int(self.destinationRegister,2)))
-                print("WRITEBACK: write " + loaded_value + " to R" + str(int(self.destinationRegister,2)))
+                print("MEMORY: Loading from memory location " + str(base_address) + " and storing in  R" + str(int(self.destinationRegister,2)))
+                print("WRITEBACK: write " + str(loaded_value) + " to R" + str(int(self.destinationRegister,2)))
 
 
     def printDecodeStatement(self):
         if (self.loadStoreBit ==  "0"): #Store to memory
             print("DECODE : Operation is STORE, Base Register is R" + str(int(self.baseRegister,2)) + ", Source Register is R" + str(int(self.destinationRegister,2)) + ".")
-            print("Read Registers: R" + str(int(self.baseRegister,2)) + " = " + Instruction.registers[int(self.baseRegister,2)] + " , R" + str(int(self.destinationRegister,2) + " = " + Instruction.registers[int(self.destinationRegister,2)] + " .")  )
+            print("Read Registers: R" + str(int(self.baseRegister,2)) + " = " + str(Instruction.registers[int(self.baseRegister,2)]) + " , R" + str(int(self.destinationRegister,2)) + " = " + str(Instruction.registers[int(self.destinationRegister,2)]) + " .")
         else:
             print("DECODE: Operation is LOAD, Base Register is R" + str(int(self.baseRegister,2)) + ", Destination Register is R" + str(int(self.destinationRegister,2)) + ".")
-            print("Read Registers: R" + str(int(self.baseRegister, 2)) + " = " + Instruction.registers[
-                int(self.baseRegister, 2)])
+            print("Read Registers: R" + str(int(self.baseRegister, 2)) + " = " + str(Instruction.registers[
+                int(self.baseRegister, 2)]) )
         print("EXECUTE : No Execute Operation")
 
 
@@ -480,7 +507,6 @@ def main():
         currentInstruction = fetchInstruction(program_counter)
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
-        print("PC:",program_counter)
         print()
         program_counter = Instruction.program_counter
 
