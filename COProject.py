@@ -67,54 +67,83 @@ class BranchInstruction:
         self.condition = ""
         self.offset = ""
         self.assignValues()
+        self.executeInstruction()
 
     def assignValues(self):
         instructionInBinary = self.instruction.instructionInBinary
         condition = instructionInBinary[:4]  # 31,30,29,28
         self.condition = condition
         self.offset = instructionInBinary[9:]
+        print("DECODE : Operation is "+self.getType()+", Address to move to is "+hex(int(self.offset,2)))
+
+    def getType(self):
+        if self.condition == BranchInstruction.CODE_EQ:
+                return "BEQ"
+        elif self.condition == BranchInstruction.CODE_NE:
+                return "BNE"
+        elif self.condition == BranchInstruction.CODE_GE:
+                return "BGE"
+        elif self.condition == BranchInstruction.CODE_LT:
+                return "BLT"
+        elif self.condition == BranchInstruction.CODE_GT:
+                return "BGT"
+        elif self.condition == BranchInstruction.CODE_LE:
+                return "BLE"
+        elif self.condition == BranchInstruction.CODE_AL:
+                return "BAL"
 
     def executeInstruction(self):
         compare_difference = Instruction.compare_difference
+        offset_to_be_used = self.offset<<2
+        if(offset_to_be_used[0] == '0'):
+            offset_to_be_used = '000000'+offset_to_be_used
+        else:
+            offset_to_be_used = '111111'+offset_to_be_used
         if(self.condition == BranchInstruction.CODE_EQ):
             if(compare_difference == 0):
-                #TODO
-                pass
+                Instruction.program_counter+=Instruction.program_counter+4+int(offset_to_be_used,2)
+                print('EXECUTE : BEQ '+hex(int(self.offset)))
             else:
+                Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_NE):
             if(compare_difference != 0):
-                #TODO
-                pass
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BNE ' + hex(int(self.offset)))
             else:
+                Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_GE):
             if(compare_difference >= 0):
-                #TODO
-                pass
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BGE ' + hex(int(self.offset)))
             else:
+                Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_LT):
             if(compare_difference < 0):
-                #TODO
-                pass
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BLT ' + hex(int(self.offset)))
             else:
+                Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_GT):
             if(compare_difference > 0):
-                #TODO
-                pass
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BGT ' + hex(int(self.offset)))
             else:
+                Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_LE):
             if(compare_difference <= 0):
-                #TODO
-                pass
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BLE ' + hex(int(self.offset)))
             else:
+                Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_AL):
-            #TODO
-            return
+            Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+            print('EXECUTE : B(AL) ' + hex(int(self.offset)))
 
 
 
@@ -377,7 +406,8 @@ def main():
         currentInstruction = fetchInstruction(program_counter)
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
-        print(program_counter)
+        print("PC:",program_counter)
+        print()
         program_counter = Instruction.program_counter
 
 
