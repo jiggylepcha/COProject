@@ -5,7 +5,7 @@
 class Instruction:
     all_instructions = list()
     registers = dict()
-    memory = list()
+    memory = dict()
 
     TYPE_DATA_PROCESSING = 0
     TYPE_SINGLE_DATA_TRANSFER = 1
@@ -227,7 +227,7 @@ class SingleDataTransferInstruction:
         instructionInBinary = self.instruction.instructionInBinary
         condition = instructionInBinary[:4]  #31,30,29,28
         self.condition = condition
-        self.immediateOffset = instructionInBinary[6:7] #25
+        self.immediateOffsetCheck = instructionInBinary[6:7] #25
         self.indexingBit = instructionInBinary[7:8] #24
         self.upDownBit = instructionInBinary[8:9] #23
         self.byteWordBit = instructionInBinary[9:10] #22
@@ -235,6 +235,48 @@ class SingleDataTransferInstruction:
         self.loadStoreBit = instructionInBinary[11:12] #20
         self.baseRegister = instructionInBinary[12:16] #19,18,17,16
         self.destinationRegister = instructionInBinary[16:20] #15,14,13,12
+
+        if (self.immediateOffsetCheck == "0"):
+            #immediate offset
+            immediateOffset = instructionInBinary[20:32]
+            self.offset = int(immediateOffset,2)
+
+        else:
+            #offset is a register
+            shiftToRegister = instructionInBinary[20:28]
+            offsetRegister = instructionInBinary[28:32]
+
+            #TODO implement shift to register
+
+            self.offset = Instruction.registers[int(offsetRegister,2)]
+
+        baseAddress = Instruction.registers[int(self.baseRegister,2)]
+
+        if (self.upDownBit == "1"):   #add the offset
+            baseAddress += self.offset
+        else:
+            baseAddress -= self.offset #subtract the offset
+
+        if (self.indexingBit == "0"): #post indexed
+            Instruction.registers[int(self.baseRegister,2)] = baseAddress
+
+        #TODO W bit
+
+        self.performLoadStore(baseAddress)
+
+
+
+    def performLoadStore(self,base_address):
+        if (self.loadStoreBit == "0"): #store to memory
+            Instruction.memory[base_address] = Instruction.registers[int(self.destinationRegister,2)]
+
+        else: #load from memory
+            loaded_value = Instruction.memory.get(base_address,None)
+            if (loaded_value == None):
+                print ("memory location not present. ERRRROROROROORORORORO")
+            else:
+                Instruction.registers[int(self.destinationRegister,2)] = loaded_value
+
 
 
 
@@ -256,7 +298,7 @@ def initRegisters(numberOfRegisters = 32):
 
 #returns List
 def initMainMemory():
-        memory = list()
+        memory = dict()
         Instruction.memory = memory
 
 
