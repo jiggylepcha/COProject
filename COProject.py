@@ -281,7 +281,7 @@ class DataProcessingInstruction:
                     int(self.destination_register, 2)) + ".")
 
             else:
-                print("Read Registers: None")
+                print   ("Read Registers: None")
 
                 print("DECODE : Operation is " + self.getTypeOfInstruction() + " , Immediate Operand is " + str(
                     self.operand_2) + " ,Destination Register is R" + str(
@@ -454,21 +454,36 @@ class SingleDataTransferInstruction:
         if (self.indexingBit == "0"):
             #pre indexed
 
+
             if (self.upDownBit == "1"):   #add the offset
                 baseAddress += self.offset
             else:
                 baseAddress -= self.offset #subtract the offset
 
+            if (self.writeBackBit == "0"):
+                #no write back
+                pass
+            else:
+                #write back
+                Instruction.registers[int(self.baseRegister,2)] = baseAddress
+
+            self.printDecodeStatement()
+            self.performLoadStore(baseAddress)
+
         else:
             #post indexed
-            Instruction.registers[int(self.baseRegister, 2)] = baseAddress
 
+            self.printDecodeStatement()
+            self.performLoadStore(baseAddress)
 
-        #TODO W bit
-        self.printDecodeStatement()
+            if (self.upDownBit == "1"):  # add the offset
+                baseAddress += self.offset
+            else:
+                baseAddress -= self.offset  # subtract the offset
 
-        self.performLoadStore(baseAddress)
+            Instruction.registers[int(self.baseRegister,2)] = baseAddress
 
+            return
 
     def performLoadStore(self,base_address):
         if (self.loadStoreBit == "0"): #store to memory
