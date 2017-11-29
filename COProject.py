@@ -146,6 +146,9 @@ class BranchInstruction:
             Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
             print('EXECUTE : B(AL) ' + hex(int(self.offset)))
 
+        print("MEMORY : No memory operation")
+        print("WRITEBACK : No writeback operation")
+
 
 
 
