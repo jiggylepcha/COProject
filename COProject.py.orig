@@ -2,9 +2,8 @@
 #Arm Simulator
 #Vishaal Udandarao 2016119
 #Suryatej Reddy 2016102
-#Jigme Lobsang lepcha 2016045
-
-import sys
+#Jigme Lobsang lepcha 2016045 
+ 
 class Instruction:
     all_instructions = list()
     registers = dict()
@@ -40,7 +39,6 @@ class Instruction:
         if (format_bits == '00'):
             #data processing instruction
             Instruction.program_counter += 4
-            Instruction.registers[15] = Instruction.program_counter
             dataInstruction = DataProcessingInstruction(self)
             self.subInstruction=dataInstruction
 
@@ -49,52 +47,15 @@ class Instruction:
             dataTransferInstruction = SingleDataTransferInstruction(self)
             self.subInstruction = dataTransferInstruction
             Instruction.program_counter += 4
-            Instruction.registers[15] = Instruction.program_counter
 
         elif (format_bits_for_branch == '1010'):
             #branch operation with corresponding condition code
             branchInstruction = BranchInstruction(self)
-            self.subInstruction = branchInstruction
-        elif (format_bits_for_branch == '1111'):
-            swiInstruction = SWIInstruction(self)
-            self.subInstruction = swiInstruction
+            self.subInstruction=branchInstruction
 
         else:
             Instruction.program_counter += 4
-            Instruction.registers[15] = Instruction.program_counter
 
-
-class SWIInstruction:
-
-    TYPE_INPUT = 108
-    TYPE_PRINT = 107
-    TYPE_EXIT = 17
-
-    def __init__(self,instruction):
-        self.instruction = instruction
-        self.type = ""
-        self.assignValues()
-
-    def assignValues(self):
-        instructionInBinary = self.instruction.instructionInBinary
-        lastByte = instructionInBinary[24:]
-        typeInInt = int(lastByte,2)
-        if (typeInInt == SWIInstruction.TYPE_INPUT):
-            if (Instruction.registers.get(0) == 0):
-                n = input("Taking Input")
-                Instruction.registers[0] = n
-            else:
-                print("Invalid Choice For Input")
-            Instruction.program_counter += 4
-        elif (typeInInt == SWIInstruction.TYPE_PRINT):
-            if (Instruction.registers.get(0) == 1):
-                print (Instruction.registers.get(1))
-            else:
-                print ("Invalid Print Statement")
-            Instruction.program_counter += 4
-        elif (typeInInt == SWIInstruction.TYPE_EXIT):
-            print ("EXIT:")
-            sys.exit()
 
 class BranchInstruction:
 
@@ -118,6 +79,7 @@ class BranchInstruction:
         condition = instructionInBinary[:4]  # 31,30,29,28
         self.condition = condition
         self.offset = instructionInBinary[9:]
+        print("DECODE : Operation is "+self.getType()+", Address to move to is "+hex(int(self.offset,2)))
 
     def getType(self):
         if self.condition == BranchInstruction.CODE_EQ:
@@ -137,80 +99,102 @@ class BranchInstruction:
 
     def executeInstruction(self):
         compare_difference = Instruction.compare_difference
-        offset_to_be_used = str((int(self.offset,2)<<2))
+        offset_to_be_used = self.offset<<2
         if(offset_to_be_used[0] == '0'):
-                offset_to_be_used = '000000'+offset_to_be_used
+            offset_to_be_used = '000000'+offset_to_be_used
         else:
-                offset_to_be_used = '111111'+offset_to_be_used
+            offset_to_be_used = '111111'+offset_to_be_used
         if(self.condition == BranchInstruction.CODE_EQ):
             if(compare_difference == 0):
-                Instruction.program_counter+=Instruction.program_counter+int(offset_to_be_used,2)+4
-                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
-                print('EXECUTE : BEQ '+hex(Instruction.program_counter)+", Branch Taken")
+                Instruction.program_counter+=Instruction.program_counter+4+int(offset_to_be_used,2)
+                print('EXECUTE : BEQ '+hex(int(self.offset)))
             else:
-                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
-                print("EXECUTE : BEQ "+hex(int(Instruction.program_counter + int(offset_to_be_used,2)))+", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_NE):
             if(compare_difference != 0):
-                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2) +4
-                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
-                print('EXECUTE : BNE ' + hex(Instruction.program_counter)+", Branch Taken")
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BNE ' + hex(int(self.offset)))
             else:
-                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
-                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_GE):
             if(compare_difference >= 0):
-                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)+4
-                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
-                print('EXECUTE : BGE ' + hex(Instruction.program_counter)+", Branch Taken")
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BGE ' + hex(int(self.offset)))
             else:
-                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
-                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_LT):
             if(compare_difference < 0):
-                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)+4
-                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
-                print('EXECUTE : BLT ' + hex(Instruction.program_counter)+", Branch Taken")
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BLT ' + hex(int(self.offset)))
             else:
-                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
-                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_GT):
             if(compare_difference > 0):
-                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)+4
-                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
-                print('EXECUTE : BGT ' + hex(Instruction.program_counter)+", Branch Taken")
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BGT ' + hex(int(self.offset)))
             else:
-                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
-                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_LE):
             if(compare_difference <= 0):
-                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)+4
-                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
-                print('EXECUTE : BLE ' + hex(Instruction.program_counter)+", Branch Taken")
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BLE ' + hex(int(self.offset)))
             else:
-                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
-                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_AL):
-            Instruction.program_counter += Instruction.program_counter + int(offset_to_be_used, 2)+4
-            print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
-            print('EXECUTE : B(AL) ' + hex(Instruction.program_counter)+", Branch Taken")
-        Instruction.registers[15] = Instruction.program_counter
+            Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+            print('EXECUTE : B(AL) ' + hex(int(self.offset)))
+
         print("MEMORY : No memory operation")
         print("WRITEBACK : No writeback operation")
 
 
+=======
+# Vishaal Udandarao 2016119
+# Suryatej Reddy 2016102
+# JIgme Lobsang Lepcha 2016045
+
+class Instruction:
+	all_instructions = list()
+	registers = dict()
+	memory = list()
+
+	TYPE_DATA_PROCESSING = 0
+	TYPE_SINGLE_DATA_TRANSFER = 1
+
+	def __init__(self,addr,inst):
+		self.addressInHex = addr
+		self.addressInInt = getIntFromHex(addr)
+		self.instruction = inst
+		self.instructionInBinary = getBinaryFromHex(inst)[2:]
+		self.subInstruction = None
+		Instruction.all_instructions.append(self)
+
+	@staticmethod
+	def getInstruction(address):
+		return next((instruct for instruct in Instruction.all_instructions if instruct.addressInInt == address), None)
+
+	def printFetchStatement(self):
+		print ("Fetch instruction " + self.instruction + " from address " + self.addressInHex)
+
+	def splitInstruction(self):
+		instructionInBinary = self.instructionInBinary
+		format_bits = instructionInBinary[4:6]  #27,26
+		
+		if format_bits == '00':
+			#data processing instruction
+			dataInstruction = DataProcessingInstruction(self)
+			self.subInstruction = dataInstruction
+
+		elif format_bits == '01':
+			#single data transfer
+			self.singleDataTransfer()
+>>>>>>> 9e96ae5ded24e963ca0a584a2053f8c910b37686
 
 
 class DataProcessingInstruction:
@@ -331,23 +315,13 @@ class DataProcessingInstruction:
             self.operand_2 = int(self.immediateValue,2)
 
 
-            if (self.getTypeOfInstruction() != "MOV"):
+            print("DECODE : Operation is " + self.getTypeOfInstruction() + ", First Operand is  R" + str(
+                int(self.sourceRegister1, 2)) + " , immediate Second Operand is " + str(
+                self.operand_2) + " ,Destination Register is R" + str(
+                int(self.destination_register, 2)) + ".")
 
-                print("DECODE : Operation is " + self.getTypeOfInstruction() + ", First Operand is  R" + str(
-                    int(self.sourceRegister1, 2)) + " , immediate Second Operand is " + str(
-                    self.operand_2) + " ,Destination Register is R" + str(
-                    int(self.destination_register, 2)) + ".")
-
-                print("Read Registers: R" + str(int(self.sourceRegister1, 2)) + " = " +
-                      str(Instruction.registers[int(self.sourceRegister1, 2)]))
-
-            else:
-
-                print("DECODE : Operation is " + self.getTypeOfInstruction() + " , Immediate Operand is " + str(
-                    self.operand_2) + " ,Destination Register is R" + str(
-                    int(self.destination_register, 2)) + ".")
-
-                print("Read Registers: None")
+            print("Read Registers: R" + str(int(self.sourceRegister1, 2)) + " = " +
+                  str(Instruction.registers[int(self.sourceRegister1, 2)]))
 
     def getTypeOfInstruction(self):
         if self.opcode == DataProcessingInstruction.OPCODE_AND:
@@ -513,37 +487,21 @@ class SingleDataTransferInstruction:
         baseAddress = Instruction.registers[int(self.baseRegister,2)]
 
 
-        if (self.indexingBit == "0"):
-            #pre indexed
 
-
-            if (self.upDownBit == "1"):   #add the offset
-                baseAddress += self.offset
-            else:
-                baseAddress -= self.offset #subtract the offset
-
-            if (self.writeBackBit == "0"):
-                #no write back
-                pass
-            else:
-                #write back
-                Instruction.registers[int(self.baseRegister,2)] = baseAddress
-
-            self.printDecodeStatement()
-            self.performLoadStore(baseAddress)
-
+        if (self.upDownBit == "1"):   #add the offset
+            baseAddress += self.offset
         else:
-            #post indexed
+            baseAddress -= self.offset #subtract the offset
 
-            self.printDecodeStatement()
-            self.performLoadStore(baseAddress)
 
-            if (self.upDownBit == "1"):  # add the offset
-                baseAddress += self.offset
-            else:
-                baseAddress -= self.offset  # subtract the offset
-
+        if (self.indexingBit == "0"): #post indexed
             Instruction.registers[int(self.baseRegister,2)] = baseAddress
+
+        #TODO W bit
+        self.printDecodeStatement()
+
+        self.performLoadStore(baseAddress)
+
 
     def performLoadStore(self,base_address):
         if (self.loadStoreBit == "0"): #store to memory
@@ -554,7 +512,7 @@ class SingleDataTransferInstruction:
         else: #load from memory
             loaded_value = Instruction.memory.get(base_address,None)
             if (loaded_value == None):
-                print ("memory location not present. ERROR")
+                print ("memory location not present. ERRRROROROROORORORORO")
             else:
                 Instruction.registers[int(self.destinationRegister,2)] = loaded_value
                 print("MEMORY: Loading from memory location " + str(base_address) + " and storing in  R" + str(int(self.destinationRegister,2)))
@@ -617,18 +575,28 @@ def decodeInstruction(instruction):
         pass
 
 def main():
+<<<<<<< HEAD
 
     loadFromFile("input.mem")
     initMainMemory()
     initRegisters()
-
-    while(Instruction.program_counter<=19):
-        currentInstruction = fetchInstruction(Instruction.program_counter)
+    program_counter = Instruction.program_counter
+    while(program_counter<=12):
+        currentInstruction = fetchInstruction(program_counter)
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
-        print ()
-        print("PC:",Instruction.registers[15])
+        print()
+        program_counter = Instruction.program_counter
 
 
+=======
+	loadFromFile("input.mem")
+	initMainMemory()
+	initRegisters()
+	for i in range(0,13,4):
+		currentInstruction = fetchInstruction(i)
+		currentInstruction.splitInstruction()
+		
+>>>>>>> 9e96ae5ded24e963ca0a584a2053f8c910b37686
 if __name__=='__main__':
     main()
