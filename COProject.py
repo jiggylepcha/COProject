@@ -4,6 +4,7 @@
 #Suryatej Reddy 2016102
 #Jigme Lobsang lepcha 2016045
 
+import sys
 class Instruction:
     all_instructions = list()
     registers = dict()
@@ -54,12 +55,46 @@ class Instruction:
             #branch operation with corresponding condition code
             branchInstruction = BranchInstruction(self)
             self.subInstruction = branchInstruction
+        elif (format_bits_for_branch == '1111'):
+            swiInstruction = SWIInstruction(self)
+            self.subInstruction = swiInstruction
 
         else:
             Instruction.program_counter += 4
             Instruction.registers[15] = Instruction.program_counter
 
 
+class SWIInstruction:
+
+    TYPE_INPUT = 108
+    TYPE_PRINT = 107
+    TYPE_EXIT = 17
+
+    def __init__(self,instruction):
+        self.instruction = instruction
+        self.type = ""
+        self.assignValues()
+
+    def assignValues(self):
+        instructionInBinary = self.instruction.instructionInBinary
+        lastByte = instructionInBinary[24:]
+        typeInInt = int(lastByte,2)
+        if (typeInInt == SWIInstruction.TYPE_INPUT):
+            if (Instruction.registers.get(0) == 0):
+                n = input("Taking Input")
+                Instruction.registers[0] = n
+            else:
+                print("Invalid Choice For Input")
+            Instruction.program_counter += 4
+        elif (typeInInt == SWIInstruction.TYPE_PRINT):
+            if (Instruction.registers.get(0) == 1):
+                print (Instruction.registers.get(1))
+            else:
+                print ("Invalid Print Statement")
+            Instruction.program_counter += 4
+        elif (typeInInt == SWIInstruction.TYPE_EXIT):
+            print ("EXIT:")
+            sys.exit()
 
 class BranchInstruction:
 
