@@ -1,6 +1,9 @@
 #CO Project
 #Arm Simulator
-
+#Vishaal Udandarao 2016119
+#Suryatej Reddy 2016102
+#Jigme Lobsang lepcha 2016045 
+ 
 class Instruction:
     all_instructions = list()
     registers = dict()
