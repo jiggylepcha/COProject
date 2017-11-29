@@ -271,13 +271,21 @@ class DataProcessingInstruction:
             self.operand_2 = int(self.immediateValue,2)
 
 
-            print("DECODE : Operation is " + self.getTypeOfInstruction() + ", First Operand is  R" + str(
-                int(self.sourceRegister1, 2)) + " , immediate Second Operand is " + str(
-                self.operand_2) + " ,Destination Register is R" + str(
-                int(self.destination_register, 2)) + ".")
+            if (self.getTypeOfInstruction() != "MOV"):
+                print("Read Registers: R" + str(int(self.sourceRegister1, 2)) + " = " +
+                      str(Instruction.registers[int(self.sourceRegister1, 2)]))
 
-            print("Read Registers: R" + str(int(self.sourceRegister1, 2)) + " = " +
-                  str(Instruction.registers[int(self.sourceRegister1, 2)]))
+                print("DECODE : Operation is " + self.getTypeOfInstruction() + ", First Operand is  R" + str(
+                    int(self.sourceRegister1, 2)) + " , immediate Second Operand is " + str(
+                    self.operand_2) + " ,Destination Register is R" + str(
+                    int(self.destination_register, 2)) + ".")
+
+            else:
+                print("Read Registers: None")
+
+                print("DECODE : Operation is " + self.getTypeOfInstruction() + " , Immediate Operand is " + str(
+                    self.operand_2) + " ,Destination Register is R" + str(
+                    int(self.destination_register, 2)) + ".")
 
     def getTypeOfInstruction(self):
         if self.opcode == DataProcessingInstruction.OPCODE_AND:
@@ -443,15 +451,18 @@ class SingleDataTransferInstruction:
         baseAddress = Instruction.registers[int(self.baseRegister,2)]
 
 
+        if (self.indexingBit == "0"):
+            #pre indexed
 
-        if (self.upDownBit == "1"):   #add the offset
-            baseAddress += self.offset
+            if (self.upDownBit == "1"):   #add the offset
+                baseAddress += self.offset
+            else:
+                baseAddress -= self.offset #subtract the offset
+
         else:
-            baseAddress -= self.offset #subtract the offset
+            #post indexed
+            Instruction.registers[int(self.baseRegister, 2)] = baseAddress
 
-
-        if (self.indexingBit == "0"): #post indexed
-            Instruction.registers[int(self.baseRegister,2)] = baseAddress
 
         #TODO W bit
         self.printDecodeStatement()
@@ -536,7 +547,7 @@ def main():
     initMainMemory()
     initRegisters()
     program_counter = Instruction.program_counter
-    while(program_counter<=12):
+    while(program_counter<=15):
         currentInstruction = fetchInstruction(program_counter)
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
