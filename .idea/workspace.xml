@@ -20,8 +20,8 @@
       <file leaf-file-name="COProject.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/COProject.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-466">
-              <caret line="268" column="44" lean-forward="false" selection-start-line="268" selection-start-column="44" selection-end-line="268" selection-end-column="44" />
+            <state relative-caret-position="362">
+              <caret line="279" column="139" lean-forward="false" selection-start-line="279" selection-start-column="139" selection-end-line="279" selection-end-column="139" />
               <folding />
             </state>
           </provider>
@@ -203,7 +203,14 @@
       <option name="project" value="LOCAL" />
       <updated>1511921177381</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="load store without testing">
+      <created>1511959265560</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1511959265560</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -243,7 +250,8 @@
     <MESSAGE value="Merge branch 'master' of https://github.com/jiggylepcha/COProject into uv119/first&#10;&#10;]" />
     <MESSAGE value="add instInBinary" />
     <MESSAGE value="Code cleaning" />
-    <option name="LAST_COMMIT_MESSAGE" value="Code cleaning" />
+    <MESSAGE value="load store without testing" />
+    <option name="LAST_COMMIT_MESSAGE" value="load store without testing" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -652,8 +660,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/COProject.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-466">
-          <caret line="268" column="44" lean-forward="false" selection-start-line="268" selection-start-column="44" selection-end-line="268" selection-end-column="44" />
+        <state relative-caret-position="362">
+          <caret line="279" column="139" lean-forward="false" selection-start-line="279" selection-start-column="139" selection-end-line="279" selection-end-column="139" />
           <folding />
         </state>
       </provider>

@@ -261,14 +261,15 @@ class SingleDataTransferInstruction:
             Instruction.registers[int(self.baseRegister,2)] = baseAddress
 
         #TODO W bit
+        self.printDecodeStatement()
 
         self.performLoadStore(baseAddress)
-
 
 
     def performLoadStore(self,base_address):
         if (self.loadStoreBit == "0"): #store to memory
             Instruction.memory[base_address] = Instruction.registers[int(self.destinationRegister,2)]
+            print ("MEMORY: Storing " + Instruction.registers[int(self.destinationRegister,2)] + " at the memory location " + base_address)
 
         else: #load from memory
             loaded_value = Instruction.memory.get(base_address,None)
@@ -276,8 +277,17 @@ class SingleDataTransferInstruction:
                 print ("memory location not present. ERRRROROROROORORORORO")
             else:
                 Instruction.registers[int(self.destinationRegister,2)] = loaded_value
+                print("MEMORY: Loading from memory location " + base_address + " and storing in  R" + str(int(self.destinationRegister,2)))
 
-
+    def printDecodeStatement(self):
+        if (self.loadStoreBit ==  "0"): #Store to memory
+            print("DECODE : Operation is STORE, Base Register is R" + str(int(self.baseRegister,2)) + ", Source Register is R" + str(int(self.destinationRegister,2)) + ".")
+            print("Read Registers: R" + str(int(self.baseRegister,2)) + " = " + Instruction.registers[int(self.baseRegister,2)] + " , R" + str(int(self.destinationRegister,2) + " = " + Instruction.registers[int(self.destinationRegister,2)] + " .")  )
+        else:
+            print("DECODE: Operation is LOAD, Base Register is R" + str(int(self.baseRegister,2)) + ", Destination Register is R" + str(int(self.destinationRegister,2)) + ".")
+            print("Read Registers: R" + str(int(self.baseRegister, 2)) + " = " + Instruction.registers[
+                int(self.baseRegister, 2)])
+        print ("EXECUTE : No Execute Operation")
 
 
 def getIntFromHex(hexValue):
