@@ -76,7 +76,6 @@ class BranchInstruction:
         condition = instructionInBinary[:4]  # 31,30,29,28
         self.condition = condition
         self.offset = instructionInBinary[9:]
-        print("DECODE : Operation is "+self.getType()+", Address to move to is "+hex(int(self.offset,2)))
 
     def getType(self):
         if self.condition == BranchInstruction.CODE_EQ:
@@ -96,56 +95,75 @@ class BranchInstruction:
 
     def executeInstruction(self):
         compare_difference = Instruction.compare_difference
-        offset_to_be_used = self.offset<<2
+        offset_to_be_used = str((int(self.offset,2)<<2))
         if(offset_to_be_used[0] == '0'):
             offset_to_be_used = '000000'+offset_to_be_used
         else:
             offset_to_be_used = '111111'+offset_to_be_used
         if(self.condition == BranchInstruction.CODE_EQ):
             if(compare_difference == 0):
-                Instruction.program_counter+=Instruction.program_counter+4+int(offset_to_be_used,2)
-                print('EXECUTE : BEQ '+hex(int(self.offset)))
+                Instruction.program_counter+=Instruction.program_counter+int(offset_to_be_used,2)
+                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
+                print('EXECUTE : BEQ '+hex(Instruction.program_counter)+", Branch Taken")
             else:
+                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
+                print("EXECUTE : BEQ "+hex(int(Instruction.program_counter + int(offset_to_be_used,2)))+", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_NE):
             if(compare_difference != 0):
-                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
-                print('EXECUTE : BNE ' + hex(int(self.offset)))
+                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
+                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
+                print('EXECUTE : BNE ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
+                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
+                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_GE):
             if(compare_difference >= 0):
-                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
-                print('EXECUTE : BGE ' + hex(int(self.offset)))
+                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
+                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
+                print('EXECUTE : BGE ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
+                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
+                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_LT):
             if(compare_difference < 0):
-                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
-                print('EXECUTE : BLT ' + hex(int(self.offset)))
+                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
+                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
+                print('EXECUTE : BLT ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
+                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
+                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_GT):
             if(compare_difference > 0):
-                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
-                print('EXECUTE : BGT ' + hex(int(self.offset)))
+                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
+                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
+                print('EXECUTE : BGT ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
+                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
+                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_LE):
             if(compare_difference <= 0):
-                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
-                print('EXECUTE : BLE ' + hex(int(self.offset)))
+                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
+                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
+                print('EXECUTE : BLE ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
+                print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
+                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_AL):
-            Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
-            print('EXECUTE : B(AL) ' + hex(int(self.offset)))
+            Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
+            print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
+            print('EXECUTE : B(AL) ' + hex(Instruction.program_counter)+", Branch Taken")
 
         print("MEMORY : No memory operation")
         print("WRITEBACK : No writeback operation")
@@ -535,13 +553,12 @@ def main():
     loadFromFile("input.mem")
     initMainMemory()
     initRegisters()
-    program_counter = Instruction.program_counter
-    while(program_counter<=12):
-        currentInstruction = fetchInstruction(program_counter)
+
+    while(Instruction.program_counter<=19):
+        currentInstruction = fetchInstruction(Instruction.program_counter)
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
-        print()
-        program_counter = Instruction.program_counter
+        print("PC:",Instruction.program_counter)
 
 
 if __name__=='__main__':
