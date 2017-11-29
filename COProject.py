@@ -1,13 +1,13 @@
 #CO Project
 #Arm Simulator
 
-#if res==0, op1==op2, res>0, op1>op2 and res<0, op1<op2
-compare_difference=0
-
 class Instruction:
     all_instructions = list()
     registers = dict()
     memory = list()
+    # if res==0, op1==op2, res>0, op1>op2 and res<0, op1<op2
+    compare_difference = 0
+    program_counter = 0
 
     TYPE_DATA_PROCESSING = 0
     TYPE_SINGLE_DATA_TRANSFER = 1
@@ -30,15 +30,122 @@ class Instruction:
     def splitInstruction(self):
         instructionInBinary = self.instructionInBinary
         format_bits = instructionInBinary[4:6]  #27,26
+        format_bits_for_branch = instructionInBinary[4:8] #27,26,25,24
+        condition_code = instructionInBinary[:4]
 
         if (format_bits == '00'):
             #data processing instruction
+            Instruction.program_counter += 4
             dataInstruction = DataProcessingInstruction(self)
             self.subInstruction=dataInstruction
 
         elif (format_bits == '01'):
             #single data transfer
+            Instruction.program_counter += 4
             self.singleDataTransfer()
+
+        elif (format_bits_for_branch == '1010'):
+            #branch operation with corresponding condition code
+            branchInstruction = BranchInstruction(self)
+            self.subInstruction=branchInstruction
+
+        else:
+            Instruction.program_counter += 4
+
+
+class BranchInstruction:
+
+    CODE_EQ = '0000'
+    CODE_NE = '0001'
+    CODE_GE = '1010'
+    CODE_LT = '1011'
+    CODE_GT = '1100'
+    CODE_LE = '1101'
+    CODE_AL = '1110'
+
+    def __init__(self):
+        self.condition = ""
+        self.offset = ""
+        self.assignValues()
+        self.executeInstruction()
+
+    def assignValues(self):
+        instructionInBinary = self.instruction.instructionInBinary
+        condition = instructionInBinary[:4]  # 31,30,29,28
+        self.condition = condition
+        self.offset = instructionInBinary[9:]
+        print("DECODE : Operation is "+self.getType()+", Address to move to is "+hex(int(self.offset,2)))
+
+    def getType(self):
+        if self.condition == BranchInstruction.CODE_EQ:
+                return "BEQ"
+        elif self.condition == BranchInstruction.CODE_NE:
+                return "BNE"
+        elif self.condition == BranchInstruction.CODE_GE:
+                return "BGE"
+        elif self.condition == BranchInstruction.CODE_LT:
+                return "BLT"
+        elif self.condition == BranchInstruction.CODE_GT:
+                return "BGT"
+        elif self.condition == BranchInstruction.CODE_LE:
+                return "BLE"
+        elif self.condition == BranchInstruction.CODE_AL:
+                return "BAL"
+
+    def executeInstruction(self):
+        compare_difference = Instruction.compare_difference
+        offset_to_be_used = self.offset<<2
+        if(offset_to_be_used[0] == '0'):
+            offset_to_be_used = '000000'+offset_to_be_used
+        else:
+            offset_to_be_used = '111111'+offset_to_be_used
+        if(self.condition == BranchInstruction.CODE_EQ):
+            if(compare_difference == 0):
+                Instruction.program_counter+=Instruction.program_counter+4+int(offset_to_be_used,2)
+                print('EXECUTE : BEQ '+hex(int(self.offset)))
+            else:
+                Instruction.program_counter+=4
+                return
+        elif(self.condition == BranchInstruction.CODE_NE):
+            if(compare_difference != 0):
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BNE ' + hex(int(self.offset)))
+            else:
+                Instruction.program_counter+=4
+                return
+        elif(self.condition == BranchInstruction.CODE_GE):
+            if(compare_difference >= 0):
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BGE ' + hex(int(self.offset)))
+            else:
+                Instruction.program_counter+=4
+                return
+        elif(self.condition == BranchInstruction.CODE_LT):
+            if(compare_difference < 0):
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BLT ' + hex(int(self.offset)))
+            else:
+                Instruction.program_counter+=4
+                return
+        elif(self.condition == BranchInstruction.CODE_GT):
+            if(compare_difference > 0):
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BGT ' + hex(int(self.offset)))
+            else:
+                Instruction.program_counter+=4
+                return
+        elif(self.condition == BranchInstruction.CODE_LE):
+            if(compare_difference <= 0):
+                Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+                print('EXECUTE : BLE ' + hex(int(self.offset)))
+            else:
+                Instruction.program_counter+=4
+                return
+        elif(self.condition == BranchInstruction.CODE_AL):
+            Instruction.program_counter += Instruction.program_counter + 4 + int(offset_to_be_used, 2)
+            print('EXECUTE : B(AL) ' + hex(int(self.offset)))
+
+
 
 
 class DataProcessingInstruction:
@@ -172,7 +279,6 @@ class DataProcessingInstruction:
 
 
     def executeInstruction(self):
-        global compare_difference
         if self.opcode == DataProcessingInstruction.OPCODE_AND:
                 res = self.operand_1 & self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
@@ -211,7 +317,7 @@ class DataProcessingInstruction:
                 print('EXECUTE : MVN '+str(self.operand_2)+' in R'+str(int(self.destination_register,2)))
         elif self.opcode == DataProcessingInstruction.OPCODE_CMP:
                 res = self.operand_1 - self.operand_2
-                compare_difference = res
+                Instruction.compare_difference = res
                 print('EXECUTE : CMP '+str(self.operand_1)+' and '+str(self.operand_2))
 
 
@@ -291,13 +397,18 @@ def decodeInstruction(instruction):
         pass
 
 def main():
+
     loadFromFile("input.mem")
     initMainMemory()
     initRegisters()
-    for i in range(0,13,4):
-        currentInstruction = fetchInstruction(i)
+    program_counter = Instruction.program_counter
+    while(program_counter<=12):
+        currentInstruction = fetchInstruction(program_counter)
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
+        print("PC:",program_counter)
+        print()
+        program_counter = Instruction.program_counter
 
 
 if __name__=='__main__':
