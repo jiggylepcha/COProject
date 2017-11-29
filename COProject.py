@@ -36,7 +36,8 @@ class Instruction:
 
         elif (format_bits == '01'):
             #single data transfer
-            self.singleDataTransfer()
+            dataTransferInstruction = SingleDataTransferInstruction(self)
+            self.subInstruction = dataTransferInstruction
 
 
 class DataProcessingInstruction:
@@ -167,6 +168,7 @@ class DataProcessingInstruction:
 
 
     def executeInstruction(self):
+        res = 0
         if self.opcode == DataProcessingInstruction.OPCODE_AND:
                 res = self.operand_1 & self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
@@ -203,7 +205,8 @@ class DataProcessingInstruction:
                 res = ~self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
                 print('EXECUTE : MVN '+str(self.operand_2)+' in R'+str(int(self.destination_register,2)))
-
+        print("MEMORY: No memory operation")
+        print("WRITEBACK: write " + str(res) + " to R" + str(int(self.destination_register,2)))
 
 
 class SingleDataTransferInstruction:
@@ -222,6 +225,8 @@ class SingleDataTransferInstruction:
         self.baseRegister = None
         self.destinationRegister = None
         self.offset = None
+
+        self.assignValues()
 
     def assignValues(self):
         instructionInBinary = self.instruction.instructionInBinary
@@ -270,6 +275,7 @@ class SingleDataTransferInstruction:
         if (self.loadStoreBit == "0"): #store to memory
             Instruction.memory[base_address] = Instruction.registers[int(self.destinationRegister,2)]
             print ("MEMORY: Storing " + Instruction.registers[int(self.destinationRegister,2)] + " at the memory location " + base_address)
+            print ("WRITEBACK: No WriteBack")
 
         else: #load from memory
             loaded_value = Instruction.memory.get(base_address,None)
@@ -278,6 +284,8 @@ class SingleDataTransferInstruction:
             else:
                 Instruction.registers[int(self.destinationRegister,2)] = loaded_value
                 print("MEMORY: Loading from memory location " + base_address + " and storing in  R" + str(int(self.destinationRegister,2)))
+                print("WRITEBACK: write " + loaded_value + " to R" + str(int(self.destinationRegister,2)))
+
 
     def printDecodeStatement(self):
         if (self.loadStoreBit ==  "0"): #Store to memory
@@ -287,7 +295,7 @@ class SingleDataTransferInstruction:
             print("DECODE: Operation is LOAD, Base Register is R" + str(int(self.baseRegister,2)) + ", Destination Register is R" + str(int(self.destinationRegister,2)) + ".")
             print("Read Registers: R" + str(int(self.baseRegister, 2)) + " = " + Instruction.registers[
                 int(self.baseRegister, 2)])
-        print ("EXECUTE : No Execute Operation")
+        print("EXECUTE : No Execute Operation")
 
 
 def getIntFromHex(hexValue):
@@ -340,7 +348,7 @@ def main():
         currentInstruction = fetchInstruction(i)
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
-
+        print ("\n")
 
 if __name__=='__main__':
     main()
