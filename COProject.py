@@ -23,7 +23,7 @@ class Instruction:
         return next((instruct for instruct in Instruction.all_instructions if instruct.addressInInt == address), None)
 
     def printFetchStatement(self):
-        print ("Fetch instruction " + self.instruction + " from address " + self.addressInHex)
+        print ("FETCH : Fetch instruction " + self.instruction + " from address " + self.addressInHex)
 
     def splitInstruction(self):
         instructionInBinary = self.instructionInBinary
