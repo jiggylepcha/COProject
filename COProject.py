@@ -125,7 +125,7 @@ class DataProcessingInstruction:
                 elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ARITHMETIC_RIGHT):
                     self.operand_2 = rshift(self.operand_2,shiftAmount)
                 elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ROTATE_RIGHT):
-
+                    pass
                     #TODO Apply ASR and ROR
 
 
