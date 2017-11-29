@@ -106,19 +106,19 @@ class DataProcessingInstruction:
 				shiftAmount = self.shift[:5]
 				shiftAmount = int(shiftAmount,2)
 				shiftType = self.shift[5:7]
-				if (str(shiftType) == SHIFT_TYPE_LOGICAL_LEFT):
+				if (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_LOGICAL_LEFT):
 					self.operand_2 = self.operand_2 << shiftAmount
-				elif (str(shiftType) == SHIFT_TYPE_LOGICAL_RIGHT):
+				elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_LOGICAL_RIGHT):
 					self.operand_2 = self.operand_2 >> shiftAmount
 
 
 
 				#TODO Apply ASR and ROR
 
-			elif (str(shiftOperation) == "1"):
-				#register specified shift amount
-
-				#TODO
+			# elif (str(shiftOperation) == "1"):
+			# 	#register specified shift amount
+            #
+			# 	#TODO
 
 
 		elif str(self.typeOfOperand) == str(DataProcessingInstruction.OPERAND_TYPE_IMMEDIATE) :
@@ -132,32 +132,32 @@ class DataProcessingInstruction:
 
 
 	def executeInstruction(self):
-		if self.opcode == OPCODE_AND:
+		if self.opcode == DataProcessingInstruction.OPCODE_AND:
 				res = self.operand_1 & self.operand_2
 				Instruction.registers[int(self.destination_register,2)] = res
-		elif self.opcode == OPCODE_EOR:
+		elif self.opcode == DataProcessingInstruction.OPCODE_EOR:
 				res = self.operand_1 ^ self.operand_2
 				Instruction.registers[int(self.destination_register,2)] = res
-		elif self.opcode == OPCODE_SUB:
+		elif self.opcode == DataProcessingInstruction.OPCODE_SUB:
 				res = self.operand_1 - self.operand_2
 				Instruction.registers[int(self.destination_register,2)] = res
-		elif self.opcode == OPCODE_RSB:
+		elif self.opcode == DataProcessingInstruction.OPCODE_RSB:
 				res = self.operand_2 - self.operand_1
 				Instruction.registers[int(self.destination_register,2)] = res
-		elif self.opcode == OPCODE_ADD:
+		elif self.opcode == DataProcessingInstruction.OPCODE_ADD:
 				res = self.operand_1 + self.operand_2
 				Instruction.registers[int(self.destination_register,2)] = res
-		elif self.opcode == OPCODE_ORR:
+		elif self.opcode == DataProcessingInstruction.OPCODE_ORR:
 				res = self.operand_1 | self.operand_2
 				Instruction.registers[int(self.destination_register,2)] = res
-		elif self.opcode == OPCODE_MOV:
+		elif self.opcode == DataProcessingInstruction.OPCODE_MOV:
 				res = self.operand_2
 				Instruction.registers[int(self.destination_register,2)] = res
-		elif self.opcode == OPCODE_BIC:
-				res = self.operand_1 & (!self.operand_2)
+		elif self.opcode == DataProcessingInstruction.OPCODE_BIC:
+				res = self.operand_1 & (~self.operand_2)
 				Instruction.registers[int(self.destination_register,2)] = res
-		elif self.opcode == OPCODE_MVN:
-				res = !self.operand_2
+		elif self.opcode == DataProcessingInstruction.OPCODE_MVN:
+				res = ~self.operand_2
 				Instruction.registers[int(self.destination_register,2)] = res
 
 
