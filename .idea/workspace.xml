@@ -20,8 +20,8 @@
       <file leaf-file-name="COProject.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/COProject.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-432">
-              <caret line="228" column="27" lean-forward="false" selection-start-line="228" selection-start-column="27" selection-end-line="228" selection-end-column="27" />
+            <state relative-caret-position="-738">
+              <caret line="127" column="20" lean-forward="false" selection-start-line="127" selection-start-column="20" selection-end-line="127" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -218,7 +218,14 @@
       <option name="project" value="LOCAL" />
       <updated>1511961459051</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Added missing print statements.">
+      <created>1511962137674</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1511962137674</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -260,7 +267,8 @@
     <MESSAGE value="Code cleaning" />
     <MESSAGE value="load store without testing" />
     <MESSAGE value="Added print statements for Load/Store" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added print statements for Load/Store" />
+    <MESSAGE value="Added missing print statements." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added missing print statements." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -669,8 +677,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/COProject.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-432">
-          <caret line="228" column="27" lean-forward="false" selection-start-line="228" selection-start-column="27" selection-end-line="228" selection-end-column="27" />
+        <state relative-caret-position="-738">
+          <caret line="127" column="20" lean-forward="false" selection-start-line="127" selection-start-column="20" selection-end-line="127" selection-end-column="20" />
           <folding />
         </state>
       </provider>

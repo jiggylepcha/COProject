@@ -113,6 +113,7 @@ class DataProcessingInstruction:
 
             shiftOperation = self.shift[7]
             if (str(shiftOperation) == "0"):
+
                 #instruction specified shift amount
                 shiftAmount = self.shift[:5]
                 shiftAmount = int(shiftAmount,2)
@@ -121,15 +122,21 @@ class DataProcessingInstruction:
                     self.operand_2 = self.operand_2 << shiftAmount
                 elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_LOGICAL_RIGHT):
                     self.operand_2 = self.operand_2 >> shiftAmount
+                elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ARITHMETIC_RIGHT):
+                    self.operand_2 = rshift(self.operand_2,shiftAmount)
+                elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ROTATE_RIGHT):
+
+                    #TODO Apply ASR and ROR
+
+
+            elif (str(shiftOperation) == "1"):
+
+                #TODO register shift
+                #register specified shift amount
+                pass
 
 
 
-                #TODO Apply ASR and ROR
-
-            # elif (str(shiftOperation) == "1"):
-            # 	#register specified shift amount
-            #
-            # 	#TODO
 
 
         elif str(self.typeOfOperand) == str(DataProcessingInstruction.OPERAND_TYPE_IMMEDIATE) :
@@ -305,7 +312,8 @@ def getBinaryFromHex(hexValue):
     b = bin(int(hexValue, 16))
     return b
 
-
+def rshift(val, n):
+    return (val % 0x100000000) >> n
 
 #returns dictionary
 def initRegisters(numberOfRegisters = 32):
