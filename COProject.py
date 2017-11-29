@@ -226,7 +226,9 @@ class DataProcessingInstruction:
 
             shiftOperation = self.shift[7]
             if (str(shiftOperation) == "0"):
-
+                ror = lambda val, r_bits, max_bits: \
+                    ((val & (2 ** max_bits - 1)) >> r_bits % max_bits) | \
+                    (val << (max_bits - (r_bits % max_bits)) & (2 ** max_bits - 1))
                 #instruction specified shift amount
                 shiftAmount = self.shift[:5]
                 shiftAmount = int(shiftAmount,2)
@@ -238,16 +240,26 @@ class DataProcessingInstruction:
                 elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ARITHMETIC_RIGHT):
                     self.operand_2 = rshift(self.operand_2,shiftAmount)
                 elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ROTATE_RIGHT):
-                    pass
+                    self.operand_2 = ror(self.operand_2, shiftAmount, 64)
                     #TODO Apply ASR and ROR
 
 
             elif (str(shiftOperation) == "1"):
-
-                #TODO register shift
-                #register specified shift amount
-                pass
-
+                ror = lambda val, r_bits, max_bits: \
+                    ((val & (2 ** max_bits - 1)) >> r_bits % max_bits) | \
+                    (val << (max_bits - (r_bits % max_bits)) & (2 ** max_bits - 1))
+                shiftRegister = self.shift[:4]
+                shiftAmount = Instruction.registers[int(shiftRegister,2)]
+                shiftAmount = shiftAmount & 255
+                shiftType = self.shift[5:7]
+                if (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_LOGICAL_LEFT):
+                    self.operand_2 = self.operand_2 << shiftAmount
+                elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_LOGICAL_RIGHT):
+                    self.operand_2 = self.operand_2 >> shiftAmount
+                elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ARITHMETIC_RIGHT):
+                    self.operand_2 = rshift(self.operand_2, shiftAmount)
+                elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ROTATE_RIGHT):
+                    self.operand_2 = ror(self.operand_2, shiftAmount, 64)
 
 
 
@@ -256,6 +268,7 @@ class DataProcessingInstruction:
             self.rotate = instructionInBinary[20:24]
             self.immediateValue = instructionInBinary[24:]
             self.operand_2 = int(self.immediateValue,2)
+
 
             print("DECODE : Operation is " + self.getTypeOfInstruction() + ", First Operand is  R" + str(
                 int(self.sourceRegister1, 2)) + " , immediate Second Operand is " + str(
@@ -387,6 +400,9 @@ class SingleDataTransferInstruction:
 
             shiftOperation = shiftToRegister[7]
             if (str(shiftOperation) == "0"):
+                ror = lambda val, r_bits, max_bits: \
+                    ((val & (2 ** max_bits - 1)) >> r_bits % max_bits) | \
+                    (val << (max_bits - (r_bits % max_bits)) & (2 ** max_bits - 1))
 
                 # instruction specified shift amount
                 shiftAmount = shiftToRegister[:5]
@@ -399,24 +415,39 @@ class SingleDataTransferInstruction:
                 elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ARITHMETIC_RIGHT):
                     self.offset = rshift(self.offset, shiftAmount)
                 elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ROTATE_RIGHT):
-                    pass
-                    # TODO Apply ASR and ROR
+                    self.offset = ror(self.offset,shiftAmount,64)
 
 
             elif (str(shiftOperation) == "1"):
 
                 # TODO register shift
                 # register specified shift amount
-                pass
-                self.offset = Instruction.registers[int(offsetRegister, 2)]
 
-
+                ror = lambda val, r_bits, max_bits: \
+                    ((val & (2 ** max_bits - 1)) >> r_bits % max_bits) | \
+                    (val << (max_bits - (r_bits % max_bits)) & (2 ** max_bits - 1))
+                shiftRegister = shiftToRegister[:4]
+                shiftAmount = Instruction.registers[int(shiftRegister, 2)]
+                shiftAmount = shiftAmount & 255
+                shiftType = shiftRegister[5:7]
+                if (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_LOGICAL_LEFT):
+                    self.offset = self.offset << shiftAmount
+                elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_LOGICAL_RIGHT):
+                    self.offset = self.offset >> shiftAmount
+                elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ARITHMETIC_RIGHT):
+                    self.offset = rshift(self.offset, shiftAmount)
+                elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ROTATE_RIGHT):
+                    self.offset = ror(self.offset, shiftAmount, 64)
 
         baseAddress = Instruction.registers[int(self.baseRegister,2)]
+
+
+
         if (self.upDownBit == "1"):   #add the offset
             baseAddress += self.offset
         else:
             baseAddress -= self.offset #subtract the offset
+
 
         if (self.indexingBit == "0"): #post indexed
             Instruction.registers[int(self.baseRegister,2)] = baseAddress
@@ -458,11 +489,12 @@ def getIntFromHex(hexValue):
     return int(hexValue,16)
 
 def getBinaryFromHex(hexValue):
-    b = bin(int(hexValue, 16))
-    return b
+    return format(int(hexValue, 16), "#034b")
+
 
 def rshift(val, n):
     return (val % 0x100000000) >> n
+
 
 #returns dictionary
 def initRegisters(numberOfRegisters = 32):
