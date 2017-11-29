@@ -64,7 +64,8 @@ class BranchInstruction:
     CODE_LE = '1101'
     CODE_AL = '1110'
 
-    def __init__(self):
+    def __init__(self,instruction):
+        self.instruction = instruction
         self.condition = ""
         self.offset = ""
         self.assignValues()
