@@ -293,20 +293,22 @@ class DataProcessingInstruction:
 
 
             if (self.getTypeOfInstruction() != "MOV"):
-                print("Read Registers: R" + str(int(self.sourceRegister1, 2)) + " = " +
-                      str(Instruction.registers[int(self.sourceRegister1, 2)]))
 
                 print("DECODE : Operation is " + self.getTypeOfInstruction() + ", First Operand is  R" + str(
                     int(self.sourceRegister1, 2)) + " , immediate Second Operand is " + str(
                     self.operand_2) + " ,Destination Register is R" + str(
                     int(self.destination_register, 2)) + ".")
 
+                print("Read Registers: R" + str(int(self.sourceRegister1, 2)) + " = " +
+                      str(Instruction.registers[int(self.sourceRegister1, 2)]))
+
             else:
-                print   ("Read Registers: None")
 
                 print("DECODE : Operation is " + self.getTypeOfInstruction() + " , Immediate Operand is " + str(
                     self.operand_2) + " ,Destination Register is R" + str(
                     int(self.destination_register, 2)) + ".")
+
+                print("Read Registers: None")
 
     def getTypeOfInstruction(self):
         if self.opcode == DataProcessingInstruction.OPCODE_AND:
@@ -504,8 +506,6 @@ class SingleDataTransferInstruction:
 
             Instruction.registers[int(self.baseRegister,2)] = baseAddress
 
-            return
-
     def performLoadStore(self,base_address):
         if (self.loadStoreBit == "0"): #store to memory
             Instruction.memory[base_address] = Instruction.registers[int(self.destinationRegister,2)]
@@ -587,6 +587,7 @@ def main():
         currentInstruction = fetchInstruction(Instruction.program_counter)
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
+        print ()
         print("PC:",Instruction.program_counter)
 
 
