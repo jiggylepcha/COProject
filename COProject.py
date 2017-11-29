@@ -120,7 +120,7 @@ class BranchInstruction:
                 print('EXECUTE : BNE ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
-                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
+                print("EXECUTE : BNE " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_GE):
@@ -130,7 +130,7 @@ class BranchInstruction:
                 print('EXECUTE : BGE ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
-                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
+                print("EXECUTE : BGE " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_LT):
@@ -140,7 +140,7 @@ class BranchInstruction:
                 print('EXECUTE : BLT ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
-                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
+                print("EXECUTE : BLT " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_GT):
@@ -150,7 +150,7 @@ class BranchInstruction:
                 print('EXECUTE : BGT ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
-                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
+                print("EXECUTE : BGT " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_LE):
@@ -160,7 +160,7 @@ class BranchInstruction:
                 print('EXECUTE : BLE ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used,2))))
-                print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
+                print("EXECUTE : BLE " + hex(int(Instruction.program_counter + int(offset_to_be_used, 2))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_AL):
@@ -546,11 +546,13 @@ def initMainMemory():
 def loadFromFile(fileName):
     file = open(fileName,'r')
     allInstructions = file.readlines()
+    x=len(allInstructions)
     for data in allInstructions:
         instruct = data.split()
         addressInHex = instruct[0].strip()
         instruction = instruct[1].strip()
         tempInstruction = Instruction(addressInHex,instruction)
+    return x
 
 #just prints instruction and returns the instruction
 def fetchInstruction(instLocation):
@@ -564,15 +566,17 @@ def decodeInstruction(instruction):
 
 def main():
 
-    loadFromFile("input.mem")
+    size=loadFromFile("input.mem")
     initMainMemory()
     initRegisters()
 
-    while(Instruction.program_counter<=19):
+    while(Instruction.program_counter<=(size*4)-1):
         currentInstruction = fetchInstruction(Instruction.program_counter)
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
         print("PC:",Instruction.program_counter)
+        print()
+
 
 
 if __name__=='__main__':
