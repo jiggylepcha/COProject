@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="f08139f9-2877-4adf-a802-9b03df213450" name="Default" comment="" />
+=======
+    <list default="true" id="03ae78f4-b87d-4c32-8a20-ecd0b14f0082" name="Default" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+>>>>>>> e10500dccc942117e3dbdf6f27739fc4cef51312
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,8 +18,13 @@
       <file leaf-file-name="COProject.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/COProject.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="162">
               <caret line="144" column="31" lean-forward="false" selection-start-line="144" selection-start-column="31" selection-end-line="144" selection-end-column="31" />
+=======
+            <state relative-caret-position="414">
+              <caret line="143" column="31" lean-forward="true" selection-start-line="143" selection-start-column="31" selection-end-line="143" selection-end-column="31" />
+>>>>>>> e10500dccc942117e3dbdf6f27739fc4cef51312
               <folding />
             </state>
           </provider>
@@ -38,7 +48,16 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
+<<<<<<< HEAD
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+=======
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="260" />
+    <option name="y" value="44" />
+    <option name="width" value="1400" />
+    <option name="height" value="959" />
+  </component>
+>>>>>>> e10500dccc942117e3dbdf6f27739fc4cef51312
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
@@ -69,6 +88,13 @@
       </pane>
     </panes>
   </component>
+<<<<<<< HEAD
+=======
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+  </component>
+>>>>>>> e10500dccc942117e3dbdf6f27739fc4cef51312
   <component name="RunDashboard">
     <option name="ruleStates">
       <list>
@@ -85,6 +111,24 @@
     <option name="remove_strategy" value="false" />
   </component>
   <component name="TaskManager">
+<<<<<<< HEAD
+=======
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="03ae78f4-b87d-4c32-8a20-ecd0b14f0082" name="Default" comment="" />
+      <created>1511912520067</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1511912520067</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Removed PyCharm errors.">
+      <created>1511913225325</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1511913225325</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+>>>>>>> e10500dccc942117e3dbdf6f27739fc4cef51312
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -112,9 +156,22 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
+<<<<<<< HEAD
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+=======
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Removed PyCharm errors." />
+    <option name="LAST_COMMIT_MESSAGE" value="Removed PyCharm errors." />
+  </component>
+>>>>>>> e10500dccc942117e3dbdf6f27739fc4cef51312
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
@@ -122,8 +179,13 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/COProject.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="162">
           <caret line="144" column="31" lean-forward="false" selection-start-line="144" selection-start-column="31" selection-end-line="144" selection-end-column="31" />
+=======
+        <state relative-caret-position="414">
+          <caret line="143" column="31" lean-forward="true" selection-start-line="143" selection-start-column="31" selection-end-line="143" selection-end-column="31" />
+>>>>>>> e10500dccc942117e3dbdf6f27739fc4cef51312
           <folding />
         </state>
       </provider>
