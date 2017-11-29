@@ -18,6 +18,7 @@ class Instruction:
         self.instruction = inst
         self.instructionInBinary = getBinaryFromHex(inst)[2:]
         self.subInstruction = None
+        print('Instruction binary:',self.instructionInBinary)
         Instruction.all_instructions.append(self)
 
     @staticmethod
@@ -30,10 +31,16 @@ class Instruction:
     def splitInstruction(self):
         instructionInBinary = self.instructionInBinary
         format_bits = instructionInBinary[4:6]  #27,26
-        format_bits_for_branch = instructionInBinary[4:8] #27,26,25,24
+        format_bits_for_branch = instructionInBinary[4:7] #27,26,25
         condition_code = instructionInBinary[:4]
 
-        if (format_bits == '00'):
+
+        if (format_bits_for_branch == '101'):
+            #branch operation with corresponding condition code
+            branchInstruction = BranchInstruction(self)
+            self.subInstruction=branchInstruction
+
+        elif (format_bits == '00'):
             #data processing instruction
             Instruction.program_counter += 4
             dataInstruction = DataProcessingInstruction(self)
@@ -44,11 +51,6 @@ class Instruction:
             dataTransferInstruction = SingleDataTransferInstruction(self)
             self.subInstruction = dataTransferInstruction
             Instruction.program_counter += 4
-
-        elif (format_bits_for_branch == '1010'):
-            #branch operation with corresponding condition code
-            branchInstruction = BranchInstruction(self)
-            self.subInstruction=branchInstruction
 
         else:
             Instruction.program_counter += 4
@@ -65,6 +67,7 @@ class BranchInstruction:
     CODE_AL = '1110'
 
     def __init__(self):
+        print('Detected as Branch')
         self.condition = ""
         self.offset = ""
         self.assignValues()
@@ -176,6 +179,7 @@ class DataProcessingInstruction:
 
 
     def __init__(self,instruction):
+        print('Detected as data processing')
         self.instruction = instruction
         self.condition = ""
         self.opcode = ""
@@ -332,6 +336,9 @@ class DataProcessingInstruction:
                 res = self.operand_1 - self.operand_2
                 Instruction.compare_difference = res
                 print('EXECUTE : CMP '+str(self.operand_1)+' and '+str(self.operand_2))
+                print('MEMORY : No memory operation')
+                print('WRITEBACK : No writeback operation')
+                return
 
         print("MEMORY: No memory operation")
         print("WRITEBACK: write " + str(res) + " to R" + str(int(self.destination_register, 2)))
@@ -343,7 +350,7 @@ class SingleDataTransferInstruction:
 
     def __init__(self,instruction):
         self.instruction = instruction
-
+        print('Detected as SingleDataTransfer')
         self.condition = ""
         self.immediateOffset = ""
         self.indexingBit = ""
