@@ -1,6 +1,8 @@
 #CO Project
 #Arm Simulator
 
+#True if op1 == op2, false if op1 != op2
+compare_flag=False
 
 class Instruction:
     all_instructions = list()
@@ -59,6 +61,7 @@ class DataProcessingInstruction:
     OPCODE_MOV = '1101'
     OPCODE_BIC = '1110'
     OPCODE_MVN = '1111'
+    OPCODE_CMP = '1010'
 
 
     def __init__(self,instruction):
@@ -162,11 +165,14 @@ class DataProcessingInstruction:
         elif self.opcode == DataProcessingInstruction.OPCODE_BIC:
                 return "BIC"
         elif self.opcode == DataProcessingInstruction.OPCODE_MVN:
-                return "MVn"
+                return "MVN"
+        elif self.opcode == DataProcessingInstruction.OPCODE_CMP:
+                return "CMP"
 
 
 
     def executeInstruction(self):
+        global compare_flag
         if self.opcode == DataProcessingInstruction.OPCODE_AND:
                 res = self.operand_1 & self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
@@ -203,6 +209,13 @@ class DataProcessingInstruction:
                 res = ~self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
                 print('EXECUTE : MVN '+str(self.operand_2)+' in R'+str(int(self.destination_register,2)))
+        elif self.opcode == DataProcessingInstruction.OPCODE_CMP:
+                res = self.operand_1 - self.operand_2
+                if(res == 0):
+                    compare_flag=True
+                else:
+                    compare_flag=False
+                print('EXECUTE : CMP '+str(self.operand_1)+' and '+str(self.operand_2))
 
 
 
