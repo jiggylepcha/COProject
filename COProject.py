@@ -39,6 +39,7 @@ class Instruction:
         if (format_bits == '00'):
             #data processing instruction
             Instruction.program_counter += 4
+            Instruction.registers[15] = Instruction.program_counter
             dataInstruction = DataProcessingInstruction(self)
             self.subInstruction=dataInstruction
 
@@ -47,14 +48,17 @@ class Instruction:
             dataTransferInstruction = SingleDataTransferInstruction(self)
             self.subInstruction = dataTransferInstruction
             Instruction.program_counter += 4
+            Instruction.registers[15] = Instruction.program_counter
 
         elif (format_bits_for_branch == '1010'):
             #branch operation with corresponding condition code
             branchInstruction = BranchInstruction(self)
-            self.subInstruction=branchInstruction
+            self.subInstruction = branchInstruction
 
         else:
             Instruction.program_counter += 4
+            Instruction.registers[15] = Instruction.program_counter
+
 
 
 class BranchInstruction:
@@ -167,7 +171,7 @@ class BranchInstruction:
             Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
             print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
             print('EXECUTE : B(AL) ' + hex(Instruction.program_counter)+", Branch Taken")
-
+        Instruction.registers[15] = Instruction.program_counter
         print("MEMORY : No memory operation")
         print("WRITEBACK : No writeback operation")
 
@@ -588,7 +592,7 @@ def main():
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
         print ()
-        print("PC:",Instruction.program_counter)
+        print("PC:",Instruction.registers[15])
 
 
 if __name__=='__main__':
