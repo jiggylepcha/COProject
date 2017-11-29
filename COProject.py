@@ -139,12 +139,12 @@ class BranchInstruction:
         compare_difference = Instruction.compare_difference
         offset_to_be_used = str((int(self.offset,2)<<2))
         if(offset_to_be_used[0] == '0'):
-            offset_to_be_used = '000000'+offset_to_be_used
+                offset_to_be_used = '000000'+offset_to_be_used
         else:
-            offset_to_be_used = '111111'+offset_to_be_used
+                offset_to_be_used = '111111'+offset_to_be_used
         if(self.condition == BranchInstruction.CODE_EQ):
             if(compare_difference == 0):
-                Instruction.program_counter+=Instruction.program_counter+int(offset_to_be_used,2)
+                Instruction.program_counter+=Instruction.program_counter+int(offset_to_be_used,2)+4
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
                 print('EXECUTE : BEQ '+hex(Instruction.program_counter)+", Branch Taken")
             else:
@@ -154,7 +154,7 @@ class BranchInstruction:
                 return
         elif(self.condition == BranchInstruction.CODE_NE):
             if(compare_difference != 0):
-                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
+                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2) +4
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
                 print('EXECUTE : BNE ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
@@ -164,7 +164,7 @@ class BranchInstruction:
                 return
         elif(self.condition == BranchInstruction.CODE_GE):
             if(compare_difference >= 0):
-                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
+                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)+4
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
                 print('EXECUTE : BGE ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
@@ -174,7 +174,7 @@ class BranchInstruction:
                 return
         elif(self.condition == BranchInstruction.CODE_LT):
             if(compare_difference < 0):
-                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
+                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)+4
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
                 print('EXECUTE : BLT ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
@@ -184,7 +184,7 @@ class BranchInstruction:
                 return
         elif(self.condition == BranchInstruction.CODE_GT):
             if(compare_difference > 0):
-                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
+                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)+4
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
                 print('EXECUTE : BGT ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
@@ -194,7 +194,7 @@ class BranchInstruction:
                 return
         elif(self.condition == BranchInstruction.CODE_LE):
             if(compare_difference <= 0):
-                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
+                Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)+4
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
                 print('EXECUTE : BLE ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
@@ -203,7 +203,7 @@ class BranchInstruction:
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_AL):
-            Instruction.program_counter += Instruction.program_counter  + int(offset_to_be_used, 2)
+            Instruction.program_counter += Instruction.program_counter + int(offset_to_be_used, 2)+4
             print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
             print('EXECUTE : B(AL) ' + hex(Instruction.program_counter)+", Branch Taken")
         Instruction.registers[15] = Instruction.program_counter
