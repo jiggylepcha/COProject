@@ -104,6 +104,10 @@ class DataProcessingInstruction:
                 int(self.sourceRegister1, 2)) + " ,Destination Register is R" + str(
                 int(self.destination_register, 2)) + ".")
 
+            print("Read Registers: R" + str(int(self.sourceRegister1,2)) + " = " +
+                   str(Instruction.registers[int(self.sourceRegister1,2)]) + " , R"
+                   + str(int(self.sourceRegister2,2)) + " = " + str(Instruction.registers[int(self.sourceRegister2,2)]))
+
 
 
             shiftOperation = self.shift[7]
@@ -136,6 +140,9 @@ class DataProcessingInstruction:
                 int(self.sourceRegister1, 2)) + " , immediate Second Operand is " + str(
                 self.operand_2) + " ,Destination Register is R" + str(
                 int(self.destination_register, 2)) + ".")
+
+            print("Read Registers: R" + str(int(self.sourceRegister1, 2)) + " = " +
+                  str(Instruction.registers[int(self.sourceRegister1, 2)]))
 
     def getTypeOfInstruction(self):
         if self.opcode == DataProcessingInstruction.OPCODE_AND:
