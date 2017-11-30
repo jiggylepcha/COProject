@@ -81,9 +81,14 @@ class SWIInstruction:
         lastByte = instructionInBinary[24:]
         typeInInt = int(lastByte,2)
         if (typeInInt == SWIInstruction.TYPE_INPUT):
+            print ("DECODE: Input Instruction")
+            print ("Read Regsiters: None")
+            print ("EXECUTE:")
             if (Instruction.registers.get(0) == 0):
                 n = input("Taking Input")
                 Instruction.registers[0] = n
+                print ("MEMORY: No Memory Operation")
+                print ("WRITEBACK: write Input Value to R0")
             else:
                 print("Invalid Choice For Input")
             Instruction.program_counter += 4
@@ -92,6 +97,8 @@ class SWIInstruction:
                 print (Instruction.registers.get(1))
             else:
                 print ("Invalid Print Statement")
+            print("MEMORY: No Memory Operation")
+            print("WRITEBACK : No Writeback")
             Instruction.program_counter += 4
         elif (typeInInt == SWIInstruction.TYPE_EXIT):
             print ("EXIT:")
