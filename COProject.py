@@ -588,11 +588,11 @@ class SingleDataTransferInstruction:
         else: #load from memory
             loaded_value = Instruction.memory.get(base_address,None)
             if (loaded_value == None):
-                print ("memory location not present. ERRRROROROROORORORORO")
-            else:
-                Instruction.registers[int(self.destinationRegister,2)] = loaded_value
-                print("MEMORY: Loading from memory location " + str(base_address) + " and storing in  R" + str(int(self.destinationRegister,2)))
-                print("WRITEBACK: write " + str(loaded_value) + " to R" + str(int(self.destinationRegister,2)))
+                Instruction.memory[base_address] = 0
+                loaded_value = 0
+            Instruction.registers[int(self.destinationRegister,2)] = loaded_value
+            print("MEMORY: Loading from memory location " + str(base_address) + " and storing in  R" + str(int(self.destinationRegister,2)))
+            print("WRITEBACK: write " + str(loaded_value) + " to R" + str(int(self.destinationRegister,2)))
 
 
     def printDecodeStatement(self):
