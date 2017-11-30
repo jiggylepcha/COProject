@@ -705,6 +705,7 @@ def main():
         print("PC:",Instruction.registers[15])
         print (Instruction.registers)
         print (Instruction.memory)
+        
         print ("----------------------------------------------")
 
 
