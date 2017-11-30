@@ -55,7 +55,10 @@ class Instruction:
             #branch operation with corresponding condition code
             branchInstruction = BranchInstruction(self)
             self.subInstruction = branchInstruction
+
+
         elif (format_bits_for_branch == '1111'):
+            #SWI Instruction
             swiInstruction = SWIInstruction(self)
             self.subInstruction = swiInstruction
 
@@ -81,14 +84,14 @@ class SWIInstruction:
         typeInInt = int(lastByte,2)
         if (typeInInt == SWIInstruction.TYPE_INPUT):
             if (Instruction.registers.get(0) == 0):
-                n = input("Taking Input")
+                n = input("Taking Input   ")
                 Instruction.registers[0] = n
             else:
                 print("Invalid Choice For Input")
             Instruction.program_counter += 4
         elif (typeInInt == SWIInstruction.TYPE_PRINT):
             if (Instruction.registers.get(0) == 1):
-                print (Instruction.registers.get(1))
+                print ("STDOUT OUTPUT "  + str(Instruction.registers.get(1)))
             else:
                 print ("Invalid Print Statement")
             Instruction.program_counter += 4
@@ -302,8 +305,6 @@ class DataProcessingInstruction:
                     self.operand_2 = rshift(self.operand_2,shiftAmount)
                 elif (str(shiftType) == DataProcessingInstruction.SHIFT_TYPE_ROTATE_RIGHT):
                     self.operand_2 = ror(self.operand_2, shiftAmount, 64)
-                    #TODO Apply ASR and ROR
-
 
             elif (str(shiftOperation) == "1"):
                 ror = lambda val, r_bits, max_bits: \
@@ -490,10 +491,6 @@ class SingleDataTransferInstruction:
 
 
             elif (str(shiftOperation) == "1"):
-
-                # TODO register shift
-                # register specified shift amount
-
                 ror = lambda val, r_bits, max_bits: \
                     ((val & (2 ** max_bits - 1)) >> r_bits % max_bits) | \
                     (val << (max_bits - (r_bits % max_bits)) & (2 ** max_bits - 1))
@@ -513,7 +510,7 @@ class SingleDataTransferInstruction:
         baseAddress = Instruction.registers[int(self.baseRegister,2)]
 
 
-        if (self.indexingBit == "0"):
+        if (self.indexingBit == "1"):
             #pre indexed
 
 
@@ -521,6 +518,7 @@ class SingleDataTransferInstruction:
                 baseAddress += self.offset
             else:
                 baseAddress -= self.offset #subtract the offset
+
 
             if (self.writeBackBit == "0"):
                 #no write back
@@ -534,7 +532,6 @@ class SingleDataTransferInstruction:
 
         else:
             #post indexed
-
             self.printDecodeStatement()
             self.performLoadStore(baseAddress)
 
@@ -551,7 +548,7 @@ class SingleDataTransferInstruction:
             print ("MEMORY: Storing " + str(Instruction.registers[int(self.destinationRegister,2)]) + " at the memory location " + str(base_address))
             print ("WRITEBACK: No WriteBack")
 
-        else: #load from memory
+        else: #load from memoryj
             loaded_value = Instruction.memory.get(base_address,None)
             if (loaded_value == None):
                 print ("memory location not present. ERRRROROROROORORORORO")
@@ -586,7 +583,7 @@ def rshift(val, n):
 #returns dictionary
 def initRegisters(numberOfRegisters = 32):
     registers = dict()
-    for reigsterId in range(0,32):
+    for reigsterId in range(0,numberOfRegisters):
             registers[reigsterId] = 0
             Instruction.registers = registers
 
@@ -620,14 +617,17 @@ def main():
 
     loadFromFile("input.mem")
     initMainMemory()
-    initRegisters()
+    initRegisters(16)
 
-    while(Instruction.program_counter<=19):
+    while(Instruction.program_counter<=23):
+        print("----------------------------------------------")
         currentInstruction = fetchInstruction(Instruction.program_counter)
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
-        print ()
         print("PC:",Instruction.registers[15])
+        print (Instruction.registers)
+        print (Instruction.memory)
+        print ("----------------------------------------------")
 
 
 if __name__=='__main__':
