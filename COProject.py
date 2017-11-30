@@ -96,6 +96,7 @@ class SWIInstruction:
             else:
                 print("Invalid Choice For Input")
             Instruction.program_counter += 4
+            Instruction.registers[15] = Instruction.program_counter
         elif (typeInInt == SWIInstruction.TYPE_PRINT):
             if (Instruction.registers.get(0) == 1):
                 print("DECODE: Print Instruction")
@@ -106,6 +107,7 @@ class SWIInstruction:
             print("MEMORY: No Memory Operation")
             print("WRITEBACK : No Writeback")
             Instruction.program_counter += 4
+            Instruction.registers[15] = Instruction.program_counter
         elif (typeInInt == SWIInstruction.TYPE_EXIT):
             print ("EXIT:")
             sys.exit()
@@ -158,10 +160,7 @@ class BranchInstruction:
 
     def executeInstruction(self):
         compare_difference = Instruction.compare_difference
-        print(self.offset)
-        # print(str(int(self.offset,2)*4)+" -----------")
         offset_to_be_used=self.twos_comp(int(self.offset,2) , len(self.offset))*4
-        print(str(offset_to_be_used))
         if(self.condition == BranchInstruction.CODE_EQ):
             if(compare_difference == 0):
                 Instruction.program_counter+=offset_to_be_used+4
@@ -204,14 +203,11 @@ class BranchInstruction:
                 Instruction.program_counter+=4
                 return
         elif(self.condition == BranchInstruction.CODE_GT):
-            #print("GTTT")
             if(compare_difference > 0):
                 Instruction.program_counter +=  int(offset_to_be_used)+4
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(Instruction.program_counter))
                 print('EXECUTE : BGT ' + hex(Instruction.program_counter)+", Branch Taken")
             else:
-                #print(str(offset_to_be_used)+" offset")
-                #print("hex "+hex(int(Instruction.program_counter + int(offset_to_be_used))))
                 print("DECODE : Operation is " + self.getType() + ", Address to move to is " + hex(int(Instruction.program_counter + int(offset_to_be_used))))
                 print("EXECUTE : BEQ " + hex(int(Instruction.program_counter + int(offset_to_be_used))) + ", Branch Not Taken")
                 Instruction.program_counter+=4
@@ -672,7 +668,7 @@ def rshift(val, n):
 #returns dictionary
 def initRegisters(numberOfRegisters = 32):
     registers = dict()
-    for reigsterId in range(0,32):
+    for reigsterId in range(0,numberOfRegisters):
             registers[reigsterId] = 0
             Instruction.registers = registers
 
@@ -714,11 +710,8 @@ def main():
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
         print("PC:",Instruction.registers[15])
-        print (Instruction.registers)
-        print (Instruction.memory)
-
+        print ("Register File : " + str(Instruction.registers))
+        print ("Global Memory : " + str(Instruction.memory))
         print ("----------------------------------------------")
-
-
 if __name__=='__main__':
     main()
