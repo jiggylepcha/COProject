@@ -12,6 +12,7 @@ class Instruction:
     # if res==0, op1==op2, res>0, op1>op2 and res<0, op1<op2
     compare_difference = 0
     program_counter = 0
+    sp = []
 
     TYPE_DATA_PROCESSING = 0
     TYPE_SINGLE_DATA_TRANSFER = 1
@@ -224,6 +225,8 @@ class DataProcessingInstruction:
     SHIFT_TYPE_ARITHMETIC_RIGHT = "10"
     SHIFT_TYPE_ROTATE_RIGHT = "11"
 
+    isStackPointer = False
+
     OPCODE_AND = '0000'
     OPCODE_EOR = '0001'
     OPCODE_SUB = '0010'
@@ -266,10 +269,14 @@ class DataProcessingInstruction:
         self.opcode = instructionInBinary[7:11]
         self.sourceRegister1 = instructionInBinary[12:16]
         self.operand_1 = Instruction.registers[int(self.sourceRegister1,2)]
+        self.isStackPointer=False
+        if(self.sourceRegister1 == '1101'):
+            self.isStackPointer = True
+
 
         self.destination_register = instructionInBinary[16:20]
         instructionInBinary = self.instruction.instructionInBinary
-        if str(self.typeOfOperand) == str(DataProcessingInstruction.OPERAND_TYPE_REGISTER):
+        if (str(self.typeOfOperand) == str(DataProcessingInstruction.OPERAND_TYPE_REGISTER) and self.isStackPointer==False):
             self.shift = instructionInBinary[20:28]
             self.sourceRegister2 = instructionInBinary[28:]
             self.operand_2 = Instruction.registers[int(self.sourceRegister2,2)]
@@ -325,21 +332,19 @@ class DataProcessingInstruction:
 
 
 
-        elif str(self.typeOfOperand) == str(DataProcessingInstruction.OPERAND_TYPE_IMMEDIATE) :
+        elif (str(self.typeOfOperand) == str(DataProcessingInstruction.OPERAND_TYPE_IMMEDIATE)):
             self.rotate = instructionInBinary[20:24]
             self.immediateValue = instructionInBinary[24:]
             self.operand_2 = int(self.immediateValue,2)
 
 
             if (self.getTypeOfInstruction() != "MOV"):
-
-                print("DECODE : Operation is " + self.getTypeOfInstruction() + ", First Operand is  R" + str(
-                    int(self.sourceRegister1, 2)) + " , immediate Second Operand is " + str(
-                    self.operand_2) + " ,Destination Register is R" + str(
-                    int(self.destination_register, 2)) + ".")
-
-                print("Read Registers: R" + str(int(self.sourceRegister1, 2)) + " = " +
-                      str(Instruction.registers[int(self.sourceRegister1, 2)]))
+                if(self.isStackPointer):
+                    print("DECODE : Operation is "+self.getTypeOfInstruction() + ", First operand is sp(Stack Pointer)"+" , immediate Second Operand is "+str(self.operand_2)+".")
+                    print("Read Registers: R13(sp)")
+                else:
+                    print("DECODE : Operation is " + self.getTypeOfInstruction() + ", First Operand is  R" + str(int(self.sourceRegister1, 2)) + " , immediate Second Operand is " + str(self.operand_2) + " ,Destination Register is R" + str(int(self.destination_register, 2)) + ".")
+                    print("Read Registers: R" + str(int(self.sourceRegister1, 2)) + " = " +str(Instruction.registers[int(self.sourceRegister1, 2)]))
 
             else:
 
@@ -384,17 +389,34 @@ class DataProcessingInstruction:
                 Instruction.registers[int(self.destination_register,2)] = res
                 print('EXECUTE : EOR '+str(self.operand_1)+' and '+str(self.operand_2))
         elif self.opcode == DataProcessingInstruction.OPCODE_SUB:
-                res = self.operand_1 - self.operand_2
-                Instruction.registers[int(self.destination_register,2)] = res
-                print('EXECUTE : SUB '+str(self.operand_1)+' and '+str(self.operand_2))
+
+                if(self.isStackPointer):
+                    for i in range(self.operand_2):
+                        #store 0 in stack by default
+                        Instruction.sp.append(0)
+                    print("EXECUTE : Grow stack by "+str(self.operand_2)+" bytes.")
+                else:
+                    res = self.operand_1 - self.operand_2
+                    Instruction.registers[int(self.destination_register,2)] = res
+                    print('EXECUTE : SUB '+str(self.operand_1)+' and '+str(self.operand_2))
         elif self.opcode == DataProcessingInstruction.OPCODE_RSB:
                 res = self.operand_2 - self.operand_1
                 Instruction.registers[int(self.destination_register,2)] = res
                 print('EXECUTE : RSB '+str(self.operand_2)+' and '+str(self.operand_1))
         elif self.opcode == DataProcessingInstruction.OPCODE_ADD:
-                res = self.operand_1 + self.operand_2
-                Instruction.registers[int(self.destination_register,2)] = res
-                print('EXECUTE : ADD '+str(self.operand_1)+' and '+str(self.operand_2))
+
+                if(self.isStackPointer):
+                    for i in range(self.operand_2):
+                        if(len(Instruction.sp)>0):
+                            Instruction.sp.pop()
+                        else:
+                            print("Stack Underflow. Stack emptied.")
+                    print("EXECUTE : Delete "+str(self.operand_2)+" bytes from stack(sp).")
+                else:
+                    res = self.operand_1 + self.operand_2
+                    Instruction.registers[int(self.destination_register,2)] = res
+                    print('EXECUTE : ADD '+str(self.operand_1)+' and '+str(self.operand_2))
+
         elif self.opcode == DataProcessingInstruction.OPCODE_ORR:
                 res = self.operand_1 | self.operand_2
                 Instruction.registers[int(self.destination_register,2)] = res
@@ -419,7 +441,10 @@ class DataProcessingInstruction:
                 return
 
         print("MEMORY: No memory operation")
-        print("WRITEBACK: write " + str(res) + " to R" + str(int(self.destination_register, 2)))
+        if(self.isStackPointer):
+            print("WRITEBACK : No writeback operation")
+        else:
+            print("WRITEBACK: write " + str(res) + " to R" + str(int(self.destination_register, 2)))
 
 
 
@@ -605,6 +630,7 @@ def loadFromFile(fileName):
         addressInHex = instruct[0].strip()
         instruction = instruct[1].strip()
         tempInstruction = Instruction(addressInHex,instruction)
+    return len(allInstructions)
 
 #just prints instruction and returns the instruction
 def fetchInstruction(instLocation):
@@ -618,11 +644,11 @@ def decodeInstruction(instruction):
 
 def main():
 
-    loadFromFile("input.mem")
+    size=loadFromFile("input.mem")
     initMainMemory()
     initRegisters()
 
-    while(Instruction.program_counter<=19):
+    while(Instruction.program_counter<=(size*4)-1):
         currentInstruction = fetchInstruction(Instruction.program_counter)
         currentInstruction.printFetchStatement()
         currentInstruction.splitInstruction()
