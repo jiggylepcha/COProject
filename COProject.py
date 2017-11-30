@@ -85,8 +85,8 @@ class SWIInstruction:
             print ("Read Regsiters: None")
             print ("EXECUTE:")
             if (Instruction.registers.get(0) == 0):
-                n = input("Taking Input")
-                Instruction.registers[0] = n
+                n = input("Taking Input \n")
+                Instruction.registers[0] = int(n)
                 print ("MEMORY: No Memory Operation")
                 print ("WRITEBACK: write Input Value to R0")
             else:
@@ -94,7 +94,9 @@ class SWIInstruction:
             Instruction.program_counter += 4
         elif (typeInInt == SWIInstruction.TYPE_PRINT):
             if (Instruction.registers.get(0) == 1):
-                print (Instruction.registers.get(1))
+                print("DECODE: Print Instruction")
+                print("Read Regsiters: None")
+                print ("EXECUTE : STDOUT - " + str(Instruction.registers.get(1)))
             else:
                 print ("Invalid Print Statement")
             print("MEMORY: No Memory Operation")
@@ -545,7 +547,7 @@ class SingleDataTransferInstruction:
         baseAddress = Instruction.registers[int(self.baseRegister,2)]
 
 
-        if (self.indexingBit == "0"):
+        if (self.indexingBit == "1"):
             #pre indexed
 
 
