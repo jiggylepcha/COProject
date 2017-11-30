@@ -366,7 +366,7 @@ class DataProcessingInstruction:
 
             else:
 
-                print("DECODE : Operation is " + self.getTypeOfInstruction() + " , Immediate Operand is " + str(
+                print("DECODE : Operation is " + self.getTypeOfInstruction() + ", First Operand is  R" + str(int(self.sourceRegister1, 2)) + " , Immediate Operand is " + str(
                     self.operand_2) + " ,Destination Register is R" + str(
                     int(self.destination_register, 2)) + ".")
 
