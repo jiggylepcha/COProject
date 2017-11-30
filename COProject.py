@@ -5,6 +5,7 @@
 #Jigme Lobsang lepcha 2016045
 
 import sys
+
 class Instruction:
     all_instructions = list()
     registers = dict()
@@ -13,6 +14,9 @@ class Instruction:
     compare_difference = 0
     program_counter = 0
     sp = []
+    isStackPointer = False
+    isLoadStackPointer = False
+    isStoreStackPointer = False
 
     TYPE_DATA_PROCESSING = 0
     TYPE_SINGLE_DATA_TRANSFER = 1
@@ -225,8 +229,6 @@ class DataProcessingInstruction:
     SHIFT_TYPE_ARITHMETIC_RIGHT = "10"
     SHIFT_TYPE_ROTATE_RIGHT = "11"
 
-    isStackPointer = False
-
     OPCODE_AND = '0000'
     OPCODE_EOR = '0001'
     OPCODE_SUB = '0010'
@@ -269,9 +271,9 @@ class DataProcessingInstruction:
         self.opcode = instructionInBinary[7:11]
         self.sourceRegister1 = instructionInBinary[12:16]
         self.operand_1 = Instruction.registers[int(self.sourceRegister1,2)]
-        self.isStackPointer=False
+        Instruction.isStackPointer=False
         if(self.sourceRegister1 == '1101'):
-            self.isStackPointer = True
+            Instruction.isStackPointer = True
 
 
         self.destination_register = instructionInBinary[16:20]
@@ -482,6 +484,14 @@ class SingleDataTransferInstruction:
         self.baseRegister = instructionInBinary[12:16] #19,18,17,16
         self.destinationRegister = instructionInBinary[16:20] #15,14,13,12
 
+        Instruction.isLoadStackPointer = False
+        Instruction.isStoreStackPointer = False
+        if(self.loadStoreBit == "0" and self.baseRegister == '1101'):
+            Instruction.isStoreStackPointer = True
+        elif(self.baseRegister == '1101'):
+            Instruction.isLoadStackPointer = True
+
+
         if (self.immediateOffsetCheck == "0"):
             #immediate offset
             immediateOffset = instructionInBinary[20:32]
@@ -541,11 +551,15 @@ class SingleDataTransferInstruction:
         if (self.indexingBit == "0"):
             #pre indexed
 
-
             if (self.upDownBit == "1"):   #add the offset
                 baseAddress += self.offset
             else:
                 baseAddress -= self.offset #subtract the offset
+
+            if (Instruction.isLoadStackPointer or Instruction.isStoreStackPointer):
+                self.printDecodeStatementForStack()
+                self.loadStoreForStack(baseAddress)
+                return
 
             if (self.writeBackBit == "0"):
                 #no write back
@@ -594,6 +608,33 @@ class SingleDataTransferInstruction:
             print("DECODE: Operation is LOAD, Base Register is R" + str(int(self.baseRegister,2)) + ", Destination Register is R" + str(int(self.destinationRegister,2)) + ".")
             print("Read Registers: R" + str(int(self.baseRegister, 2)) + " = " + str(Instruction.registers[
                 int(self.baseRegister, 2)]) )
+        print("EXECUTE : No Execute Operation")
+
+    def loadStoreForStack(self, baseAddress):
+        if(self.loadStoreBit == "0"):
+
+            if(len(Instruction.sp)>int(self.offset/4)):
+                Instruction.sp[int(self.offset/4)]=Instruction.registers[int(self.destinationRegister, 2)]
+                print("MEMORY: Storing " + str(Instruction.registers[int(self.destinationRegister, 2)]) + "in stack")
+            else:
+                print("Stack overflow error.")
+            print("WRITEBACK: No WriteBack")
+        else:
+            if(len(Instruction.sp)>int(self.offset/4)):
+                loaded_value=Instruction.sp[int(self.offset/4)]
+                Instruction.registers[int(self.destinationRegister, 2)] = loaded_value
+                print("MEMORY: Loading from stack and storing in  R" + str(int(self.destinationRegister, 2)))
+                print("WRITEBACK: write " + str(loaded_value) + " to R" + str(int(self.destinationRegister, 2)))
+            else:
+                print("Stack location requested does not exist.")
+
+    def printDecodeStatementForStack(self):
+        if (self.loadStoreBit ==  "0"): #Store to memory
+            print("DECODE : Operation is STORE, Base Register is R13(sp)"  + ", Source Register is R" + str(int(self.destinationRegister,2)) + ".")
+            print("Read Registers: R" + str(int(self.destinationRegister,2)) + " = " + str(Instruction.registers[int(self.destinationRegister,2)]) + " .")
+        else:
+            print("DECODE: Operation is LOAD, Base Register is R13(sp)" + ", Destination Register is R" + str(int(self.destinationRegister,2)) + ".")
+            print("Read Registers: R13(sp)")
         print("EXECUTE : No Execute Operation")
 
 
